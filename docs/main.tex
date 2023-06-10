@@ -1,0 +1,33 @@
+% !TEX program = xelatex
+\include{inc/fmt/preambule}
+
+% ---------------------- Документ ----------------------
+\begin{document}
+	\includepdf{inc/00-title.pdf}
+	%\includepdf[pages=1]{inc/titles/task.pdf}
+	\includepdf{inc/titles/task.pdf}
+	
+	\normalsize
+	\setcounter{page}{3}
+	
+	%\pagebreak
+	
+	%\include{inc/01-abstract}
+	
+	\renewcommand{\contentsname}{\normalsize\bfseries\centering СОДЕРЖАНИЕ}
+	\small
+	\tableofcontents
+	\normalsize
+	
+	\pagebreak
+	
+%	\include{inc/02-naming}
+	\include{inc/03-intro}
+	\include{inc/10-analysis}
+	\include{inc/20-design}
+	\include{inc/30-technology}
+	\include{inc/40-research}
+	\include{inc/50-conclusion}
+	\include{inc/60-bibliography}
+	\include{inc/70-application}
+\end{document}

@@ -1,0 +1,51 @@
+\babel@toc {russian}{}\relax 
+\contentsline {section}{ВВЕДЕНИЕ}{5}{Doc-Start}%
+\contentsline {section}{\numberline {1}Аналитическая часть}{6}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Формализация задачи}{6}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Возможные области применения}{6}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Анализ существующих решений}{7}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Онтология}{9}{subsection.1.4}%
+\contentsline {subsection}{\numberline {1.5}Особенности естественного языка}{11}{subsection.1.5}%
+\contentsline {subsection}{\numberline {1.6}Предобработка текста на ЕЯ}{12}{subsection.1.6}%
+\contentsline {subsection}{\numberline {1.7}Векторизация}{12}{subsection.1.7}%
+\contentsline {subsubsection}{\numberline {1.7.1}Методы для вычисления веса слова в тексте}{13}{subsubsection.1.7.1}%
+\contentsline {subsection}{\numberline {1.8}Поиск нечётких дубликатов}{16}{subsection.1.8}%
+\contentsline {subsubsection}{\numberline {1.8.1}Общие понятия}{16}{subsubsection.1.8.1}%
+\contentsline {subsubsection}{\numberline {1.8.2}Метод шинглов}{16}{subsubsection.1.8.2}%
+\contentsline {subsubsection}{\numberline {1.8.3}Векторная модель}{17}{subsubsection.1.8.3}%
+\contentsline {subsection}{\numberline {1.9}Семантические сети}{18}{subsection.1.9}%
+\contentsline {subsection}{\numberline {1.10}Синтаксическое дерево}{20}{subsection.1.10}%
+\contentsline {subsection}{\numberline {1.11}Синтаксический граф}{21}{subsection.1.11}%
+\contentsline {section}{\numberline {2}Конструкторская часть}{23}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Формат входных данных}{23}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Формат выходных данных}{23}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}IDEF0}{23}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Ключевые алгоритмы}{31}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Основной алгоритм}{31}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Алгоритм предобработки данных}{32}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}Алгоритм создания онтологии на базе статистических данных}{33}{subsubsection.2.4.3}%
+\contentsline {subsubsection}{\numberline {2.4.4}Алгоритм создания онтологии на основе синтаксических графов}{34}{subsubsection.2.4.4}%
+\contentsline {subsubsection}{\numberline {2.4.5}Алгоритм построения сети}{37}{subsubsection.2.4.5}%
+\contentsline {subsubsection}{\numberline {2.4.6}Алгоритм поиска косинусного сходства}{38}{subsubsection.2.4.6}%
+\contentsline {subsubsection}{\numberline {2.4.7}Алгоритм поиска по сети}{39}{subsubsection.2.4.7}%
+\contentsline {subsection}{\numberline {2.5}ER-диаграмма}{41}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Use-case диаграмма}{42}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Технологическая часть}{44}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Выбор средств программной реализации}{44}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Основные средства}{44}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Вспомогательные средства}{45}{subsubsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.2}Используемые библиотеки}{45}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Сбор данных для формирования онтологии}{46}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}UML-диаграммы}{47}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Интерфейс программы}{48}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Демонстрация работы программы}{51}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Тестирование программы}{57}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Исследовательская часть}{62}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Постановка задачи на исследование}{62}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Проведение исследований}{62}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Влияние размера выборки на меру сходства}{62}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Влияние размера выборки на процент обращения к вспомогательному методу}{65}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Сравнение времени поиска по частичной и полной сети}{66}{subsubsection.4.2.3}%
+\contentsline {section}{ЗАКЛЮЧЕНИЕ}{69}{figure.caption.40}%
+\contentsline {section}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}{71}{figure.caption.40}%
+\contentsline {section}{ПРИЛОЖЕНИЕ A}{77}{figure.caption.40}%
