@@ -41,39 +41,6 @@ public class OberonCompilerService {
 
         module = createModule();
 
-//        OberonLexer lexer = new OberonLexer(CharStreams.fromFileName(filename));
-//        CommonTokenStream tokens = new CommonTokenStream(lexer);
-//        OberonParser parser = new OberonParser(tokens);
-//        ParseTree tree = parser.module();
-//
-//        ParseTreeWalker walker = new ParseTreeWalker();
-//        walker.walk(new OberonWalker(), tree);
-
-//        LLVMLinkInMCJIT();
-//        LLVMInitializeNativeAsmPrinter();
-//        LLVMInitializeNativeAsmParser();
-//        LLVMInitializeNativeDisassembler();
-//        LLVMInitializeNativeTarget();
-//
-//        LLVMContextRef context = LLVMContextCreate();
-//        LLVMModuleRef module = LLVMModuleCreateWithNameInContext(appParams.moduleName, context);
-//
-//        // Создание функции
-//        LLVMTypeRef[] paramTypes = { LLVMInt32Type(), LLVMInt32Type() };
-//        LLVMTypeRef functionType = LLVMFunctionType(LLVMInt32Type(), new PointerPointer<>(paramTypes), 2, 0);
-//        LLVMValueRef function = LLVMAddFunction(module, "add", functionType);
-//
-//        // Создание базового блока
-//        LLVMBasicBlockRef entry = LLVMAppendBasicBlock(function, "entry");
-//        LLVMBuilderRef builder = LLVMCreateBuilder();
-//        LLVMPositionBuilderAtEnd(builder, entry);
-//
-//        // Генерация инструкций
-//        LLVMValueRef param1 = LLVMGetParam(function, 0);
-//        LLVMValueRef param2 = LLVMGetParam(function, 1);
-//        LLVMValueRef result = LLVMBuildAdd(builder, param1, param2, "result");
-//        LLVMBuildRet(builder, result);
-
         // Вывод LLVM-IR на консоль
         LLVMDumpModule(module);
 
@@ -129,13 +96,4 @@ public class OberonCompilerService {
         LLVMDisposeModule(module);
         LLVMContextDispose(context);
     }
-
-//    private static void runCommand(String... command) throws IOException, InterruptedException {
-//        ProcessBuilder processBuilder = new ProcessBuilder(command);
-//        Process process = processBuilder.inheritIO().start();
-//        int exitCode = process.waitFor();
-//        if (exitCode != 0) {
-//            throw new RuntimeException("Command execution failed with exit code: " + exitCode);
-//        }
-//    }
 }
