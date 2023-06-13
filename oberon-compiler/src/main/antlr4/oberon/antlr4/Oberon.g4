@@ -42,7 +42,6 @@ typeDeclaration
 type_
    : qualident
    | arrayType
-   | recordType
    | pointerType
    | procedureType
    ;
@@ -53,22 +52,6 @@ arrayType
 
 length
    : constExpression
-   ;
-
-recordType
-   : RECORD ('(' baseType ')')? fieldListSequence? END
-   ;
-
-baseType
-   : qualident
-   ;
-
-fieldListSequence
-   : fieldList (';' fieldList)*
-   ;
-
-fieldList
-   : identList ':' type_
    ;
 
 identList
@@ -268,10 +251,6 @@ POINTER
 
 TO
    : 'TO'
-   ;
-
-RECORD
-   : 'RECORD'
    ;
 
 PROCEDURE
