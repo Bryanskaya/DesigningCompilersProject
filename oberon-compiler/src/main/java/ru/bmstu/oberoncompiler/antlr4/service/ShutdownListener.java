@@ -23,7 +23,7 @@ public class ShutdownListener implements ApplicationListener<ContextClosedEvent>
                 String.format("C:\\Program Files\\LLVM\\bin\\clang.exe -c -o " + appParams.buildDir +
                         "mainCRTStartup.obj ./src/main/java/ru/bmstu/oberoncompiler/antlr4/config/mainCRTStartup.c"),
                 String.format("C:\\Program Files\\LLVM\\bin\\clang.exe -c -o " + appParams.buildDir + appParams.moduleName + ".obj " +
-                        appParams.buildDir + "minimalistic.ll"), //appParams.moduleName),
+                        appParams.buildDir + appParams.moduleName + ".ll"), //appParams.moduleName),
                 String.format("C:\\Program Files\\LLVM\\bin\\lld-link.exe /subsystem:console " +
                         "/out:" + appParams.buildDir + appParams.moduleName + ".exe " +
                         appParams.buildDir + appParams.moduleName + ".obj " +

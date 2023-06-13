@@ -11,6 +11,7 @@ import org.bytedeco.javacpp.*;
 import org.bytedeco.llvm.LLVM.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.bmstu.oberoncompiler.antlr4.OberonVisitor;
 import ru.bmstu.oberoncompiler.antlr4.OberonWalker;
 import ru.bmstu.oberoncompiler.antlr4.config.AppParams;
 
@@ -31,15 +32,21 @@ public class OberonCompilerService {
     @Autowired
     private AppParams appParams;
 
+    @Autowired
+    private OberonVisitor visitor;
+
     public void process(String filename) throws IOException, InterruptedException {
         lexer = doLexicalAnalysis(filename);
         OberonParser parser = doSynAnalysis();
-        ParseTree tree = parser.module();
+        Object context = parser.module();
+        ParseTree tree = (ParseTree) context;
 
         ParseTreeWalker walker = new ParseTreeWalker();
-        walker.walk(new OberonWalker(), tree);
+        walker.walk(new OberonWalker(parser), tree);
 
-        module = createModule();
+        module = (LLVMModuleRef) visitor.visitModule((OberonParser.ModuleContext) context);
+
+//        module = createModule();
 
         // Вывод LLVM-IR на консоль
         LLVMDumpModule(module);

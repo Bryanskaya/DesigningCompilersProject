@@ -21,7 +21,7 @@ public class OberonCompilerApplication {
 
     @EventListener(ApplicationReadyEvent.class)
     public void run() {
-        String filename = "./src/test/data/test_1.txt";
+        String filename = "./src/test/data/test_assign_value.txt";
 
         try {
             service.process(filename);

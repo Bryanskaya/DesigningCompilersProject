@@ -7,7 +7,7 @@ ident
    ;
 
 qualident
-   : (ident '.')? ident
+   : ident
    ;
 
 identdef
@@ -16,15 +16,10 @@ identdef
 
 integer
    : (DIGIT+)
-   | (DIGIT HEXDIGIT* 'H')
    ;
 
 real
-   : DIGIT+ '.' DIGIT* scaleFactor?
-   ;
-
-scaleFactor
-   : 'E' ('+' | '-')? DIGIT+
+   : DIGIT+ '.' DIGIT*
    ;
 
 number
@@ -146,10 +141,7 @@ designator
    ;
 
 selector
-   : '.' ident
-   | '[' expList ']'
-   | '^'
-   | '(' qualident ')'
+   : '[' expList ']'
    ;
 
 set_
@@ -169,7 +161,7 @@ actualParameters
    ;
 
 statement
-   : (assignment | procedureCall | ifStatement | caseStatement | whileStatement | repeatStatement | forStatement)?
+   : (assignment | procedureCall | ifStatement | caseStatement | whileStatement | forStatement)?
    ;
 
 assignment
@@ -212,10 +204,6 @@ label
 
 whileStatement
    : WHILE expression DO statementSequence (ELSIF expression DO statementSequence)* END
-   ;
-
-repeatStatement
-   : REPEAT statementSequence UNTIL expression
    ;
 
 forStatement
@@ -350,14 +338,6 @@ DO
    : 'DO'
    ;
 
-REPEAT
-   : 'REPEAT'
-   ;
-
-UNTIL
-   : 'UNTIL'
-   ;
-
 FOR
    : 'FOR'
    ;
@@ -396,17 +376,6 @@ IMPORT
 
 STRING
    : ('"' .*? '"')
-   | (DIGIT HEXDIGIT* 'X')
-   ;
-
-HEXDIGIT
-   : DIGIT
-   | 'A'
-   | 'B'
-   | 'C'
-   | 'D'
-   | 'E'
-   | 'F'
    ;
 
 IDENT
@@ -428,3 +397,4 @@ COMMENT
 WS
    : [ \t\r\n] -> skip
    ;
+

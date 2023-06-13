@@ -1,0 +1,6 @@
+MODULE hello;
+VAR n:INTEGER;
+
+BEGIN
+    n := 10;
+END hello.
