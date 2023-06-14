@@ -120,6 +120,12 @@ public class OberonVisitor extends OberonBaseVisitor {
                     value = LLVMAddGlobal(module, LLVMInt32Type(), ident);
                     LLVMSetInitializer(value, LLVMConstInt(LLVMInt32Type(), 0, 1));
                     break;
+                case "REAL":
+                    LLVMTypeRef doubleType = LLVMDoubleType();
+                    value = LLVMAddGlobal(module, doubleType, ident);
+                    LLVMValueRef initValue = LLVMConstReal(doubleType, 0);
+                    LLVMSetInitializer(value, initValue);
+                    break;
                 default:
                     throw new IllegalArgumentException("Unsupported variable type: " + resType_);
             }
@@ -305,8 +311,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         LLVMValueRef res = null;
         if (ctx.integer() != null)
             res = visitInteger(ctx.integer());
-//        else if (ctx.real() != null)
-//            res = visitReal(ctx.real()); //todo
+        else if (ctx.real() != null)
+            res = visitReal(ctx.real());
 
         return res;
     }
@@ -315,10 +321,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         return LLVMConstInt(LLVMInt32Type(), Long.parseLong(ctx.getText()), 1);
     }
 
-    public Object visitReal(OberonParser.RealContext ctx) {
-        //todo two DIGIT
-//        Object res = visitScaleFactor(ctx.scaleFactor());
-        return null; //todo
+    public LLVMValueRef visitReal(OberonParser.RealContext ctx) {
+        return LLVMConstReal(LLVMDoubleType(), Double.parseDouble(ctx.getText()));
     }
 
     public Object visitMulOperator(OberonParser.MulOperatorContext ctx) {
