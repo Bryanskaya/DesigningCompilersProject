@@ -1,0 +1,8 @@
+MODULE hello;
+VAR
+    n,m : INTEGER;
+    i   : REAL;
+
+BEGIN
+    n := 10;
+END hello.
