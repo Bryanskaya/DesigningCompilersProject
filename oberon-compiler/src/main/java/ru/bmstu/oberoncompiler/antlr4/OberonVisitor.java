@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.bytedeco.llvm.global.LLVM.*;
-import static org.bytedeco.llvm.global.LLVM.LLVMCreateBuilder;
 
 @Slf4j
 @Service
@@ -23,18 +22,19 @@ public class OberonVisitor extends OberonBaseVisitor {
     @Autowired
     private AppParams appParams;
 
-    private LLVMContextRef context;
+    private final LLVMContextRef context = LLVMContextCreate();;
     private LLVMBuilderRef builder;
     private LLVMModuleRef module;
 
-    public Object visitModule(OberonParser.ModuleContext ctx) {
+    private void initLLVMComponents() {
 //        LLVMLinkInMCJIT();
         LLVMInitializeNativeAsmPrinter();
         LLVMInitializeNativeAsmParser();
 //        LLVMInitializeNativeDisassembler();
         LLVMInitializeNativeTarget();
+    }
 
-        context = LLVMContextCreate();
+    private void initMain() {
         module = LLVMModuleCreateWithNameInContext(appParams.moduleName, context);
 
         LLVMValueRef function = LLVMAddFunction(module, "main",
@@ -42,9 +42,13 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         LLVMBasicBlockRef entry = LLVMAppendBasicBlock(function, "main_entry");
 
-        LLVMBuilderRef builderCur = LLVMCreateBuilderInContext(context);
-        builder = builderCur;
-        LLVMPositionBuilderAtEnd(builderCur, entry);
+        builder = LLVMCreateBuilderInContext(context);
+        LLVMPositionBuilderAtEnd(builder, entry);
+    }
+
+    public Object visitModule(OberonParser.ModuleContext ctx) {
+        initLLVMComponents();
+        initMain();
 
         String nameStartModule = visitIdent(ctx.ident(0));
         if (ctx.importList() != null)
@@ -55,14 +59,13 @@ public class OberonVisitor extends OberonBaseVisitor {
         visitStatementSequence(ctx.statementSequence());
 
         LLVMValueRef result = LLVMConstNull(LLVMInt32Type());
-        LLVMBuildRet(builderCur, result);
+        LLVMBuildRet(builder, result);
 
         String nameEndModule = visitIdent(ctx.ident(1));
         if (!Objects.equals(nameStartModule, nameEndModule))
-            throw new WrongModuleNameException();
+            throw new WrongModuleNameException(nameStartModule, nameEndModule);
 
 //        builder = null;
-
         return module;
     }
 
@@ -187,32 +190,13 @@ public class OberonVisitor extends OberonBaseVisitor {
 
     public Object visitAssignment(OberonParser.AssignmentContext ctx) {
         String resDesignator = visitDesignator(ctx.designator());
-
-//        LLVMContextRef context1 = LLVMContextCreate();
-//        LLVMModuleRef module = LLVMModuleCreateWithNameInContext("hello", context);
-//        LLVMBuilderRef builder1 = LLVMCreateBuilderInContext(context1);
-//        LLVMTypeRef intType = LLVMInt32TypeInContext(context);
-//        LLVMValueRef n = LLVMAddGlobal(module, intType, "test");
-//        LLVMValueRef nRef = LLVMGetNamedGlobal(module, "test");
-//        LLVMValueRef value1024 = LLVMConstInt(intType, 1024, 1);
-//        LLVMBuildStore(builder, value1024, nRef);
-//
-//        final LLVMValueRef andResultPtr = LLVMBuildAlloca(builder, LLVMInt1Type(), "");
-//        LLVMBuildStore(builder, LLVMConstInt(LLVMInt1Type(), 0, 0), andResultPtr);
-
-
         LLVMValueRef varRef = LLVMGetNamedGlobal(module, resDesignator);
         if (varRef == null)
             throw new IllegalArgumentException("Wrong variable's name: " + resDesignator);
 
         LLVMValueRef valueExpressionRef = visitExpression(ctx.expression()); //todo return value
 
-        try {
-            LLVMBuildStore(builder, valueExpressionRef, varRef);
-        } catch (Throwable e) {
-            log.error("///// {}", e.getMessage());
-            e.printStackTrace();
-        }
+        LLVMBuildStore(builder, valueExpressionRef, varRef);
 
         return null; //TODO
     }
