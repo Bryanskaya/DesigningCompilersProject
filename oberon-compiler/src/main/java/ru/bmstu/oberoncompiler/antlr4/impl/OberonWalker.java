@@ -1,4 +1,4 @@
-package ru.bmstu.oberoncompiler.antlr4;
+package ru.bmstu.oberoncompiler.antlr4.impl;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;

@@ -11,8 +11,8 @@ import org.bytedeco.javacpp.*;
 import org.bytedeco.llvm.LLVM.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.bmstu.oberoncompiler.antlr4.OberonVisitor;
-import ru.bmstu.oberoncompiler.antlr4.OberonWalker;
+import ru.bmstu.oberoncompiler.antlr4.impl.OberonVisitor;
+import ru.bmstu.oberoncompiler.antlr4.impl.OberonWalker;
 import ru.bmstu.oberoncompiler.antlr4.config.AppParams;
 
 import java.io.IOException;
