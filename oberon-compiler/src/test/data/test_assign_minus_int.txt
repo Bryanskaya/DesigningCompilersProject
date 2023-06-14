@@ -2,6 +2,6 @@ MODULE hello;
 VAR n:INTEGER;
 
 BEGIN
-    n := 1025;
+    n := -10;
     RETURN n;
 END hello.

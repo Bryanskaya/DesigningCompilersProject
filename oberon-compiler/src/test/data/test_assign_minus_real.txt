@@ -1,0 +1,7 @@
+MODULE hello;
+VAR n:REAL;
+
+BEGIN
+    n := -10.859;
+    RETURN n;
+END hello.

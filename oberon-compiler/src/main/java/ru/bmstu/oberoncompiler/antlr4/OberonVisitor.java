@@ -255,14 +255,52 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public LLVMValueRef visitSimpleExpression(OberonParser.SimpleExpressionContext ctx) {
-        //TODO what should I do with +/-
-        LLVMValueRef resTerm0 = visitTerm(ctx.term(0));
-        for (int i = 0; i < ctx.addOperator().size(); i++) {
-            Object resAddOperator = visitAddOperator(ctx.addOperator(i)); //todo return value
-            LLVMValueRef resTerm1 = visitTerm(ctx.term(i + 1)); //todo attention + return value
+        char signChar = ctx.getText().charAt(0);
+
+        LLVMValueRef resTermLeft = visitTerm(ctx.term(0));
+
+        if (signChar == '-') {
+            LLVMTypeRef typeLeftRef = LLVMTypeOf(resTermLeft);
+            if (LLVMGetTypeKind(typeLeftRef) == LLVMIntegerTypeKind) {
+                LLVMValueRef minusOne = LLVMConstInt(typeLeftRef, -1, 0);
+                resTermLeft = LLVMBuildMul(builder, resTermLeft, minusOne, "mul_minus_one");
+            }
+            else {
+                LLVMValueRef minusOne = LLVMConstReal(typeLeftRef, -1.0);
+                resTermLeft = LLVMBuildFMul(builder, resTermLeft, minusOne, "mul_minus_one");
+            }
         }
 
-        return resTerm0; //todo
+        for (int i = 0; i < ctx.addOperator().size(); i++) {
+            String resAddOperator = visitAddOperator(ctx.addOperator(i));
+            LLVMValueRef resTermRight = visitTerm(ctx.term(i + 1));
+
+            switch (resAddOperator) {
+                case "+":
+                    LLVMTypeRef typeLeftRef = LLVMTypeOf(resTermLeft);
+                    LLVMTypeRef typeRightRef = LLVMTypeOf(resTermRight);
+                    int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
+                    int kindTypeRight = LLVMGetTypeKind(typeRightRef);
+
+                    if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
+                        resTermLeft = LLVMBuildAdd(builder, resTermLeft, resTermRight, "add_result");
+                    else {
+                        if (kindTypeLeft == LLVMIntegerTypeKind)
+                            resTermLeft = LLVMBuildSIToFP(builder, resTermLeft, LLVMDoubleType(), "upd_type");
+                        else if (kindTypeRight == LLVMIntegerTypeKind)
+                            resTermRight = LLVMBuildSIToFP(builder, resTermRight, LLVMDoubleType(), "upd_type");
+                        resTermLeft = LLVMBuildFAdd(builder, resTermLeft, resTermRight, "add_result");
+                    }
+
+                    break;
+                case "-":
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Operator " + resAddOperator + " NOT SUPPORTED YET");
+            }
+        }
+
+        return resTermLeft; //todo
     }
 
     public Object visitRelation(OberonParser.RelationContext ctx) {
@@ -280,8 +318,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         return resFactor0;
     }
 
-    public Object visitAddOperator(OberonParser.AddOperatorContext ctx) {
-        throw new UnsupportedOperationException("ADDOPERATOR NOT SUPPORTED YET"); //todo
+    public String visitAddOperator(OberonParser.AddOperatorContext ctx) {
+        return ctx.getText();
     }
 
     public LLVMValueRef visitFactor(OberonParser.FactorContext ctx) {
@@ -313,7 +351,6 @@ public class OberonVisitor extends OberonBaseVisitor {
             res = visitInteger(ctx.integer());
         else if (ctx.real() != null)
             res = visitReal(ctx.real());
-
         return res;
     }
 

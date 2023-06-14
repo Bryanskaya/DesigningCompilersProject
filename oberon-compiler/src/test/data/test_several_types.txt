@@ -5,4 +5,7 @@ VAR
 
 BEGIN
     n := 10;
+    i := 8.3;
+    i := i + n;
+    RETURN i;
 END hello.
