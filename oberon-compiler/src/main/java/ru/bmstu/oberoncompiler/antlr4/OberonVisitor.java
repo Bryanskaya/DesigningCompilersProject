@@ -51,6 +51,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         initMain();
 
         String nameStartModule = visitIdent(ctx.ident(0));
+
         if (ctx.importList() != null)
             visitImportList(ctx.importList());
 
@@ -58,8 +59,10 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         visitStatementSequence(ctx.statementSequence());
 
-        LLVMValueRef result = LLVMConstNull(LLVMInt32Type());
-        LLVMBuildRet(builder, result);
+        LLVMValueRef returnValue = visitFactor(ctx.factor());
+
+//        LLVMValueRef result = LLVMConstNull(LLVMInt32Type());
+        LLVMBuildRet(builder, returnValue);
 
         String nameEndModule = visitIdent(ctx.ident(1));
         if (!Objects.equals(nameStartModule, nameEndModule))
@@ -189,11 +192,7 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public Object visitAssignment(OberonParser.AssignmentContext ctx) {
-        String resDesignator = visitDesignator(ctx.designator());
-        LLVMValueRef varRef = LLVMGetNamedGlobal(module, resDesignator);
-        if (varRef == null)
-            throw new IllegalArgumentException("Wrong variable's name: " + resDesignator);
-
+        LLVMValueRef varRef = visitDesignator(ctx.designator());
         LLVMValueRef valueExpressionRef = visitExpression(ctx.expression()); //todo return value
 
         LLVMBuildStore(builder, valueExpressionRef, varRef);
@@ -201,14 +200,18 @@ public class OberonVisitor extends OberonBaseVisitor {
         return null; //TODO
     }
 
-    public String visitDesignator(OberonParser.DesignatorContext ctx) {
+    public LLVMValueRef visitDesignator(OberonParser.DesignatorContext ctx) {
         String resQualident = visitQualident(ctx.qualident());
         for (OberonParser.SelectorContext selector : ctx.selector()) {
 //            visitSelector(selector); //todo return value
             throw new UnsupportedOperationException("SELECTOR NOT SUPPORTED YET");
         }
 
-        return resQualident;
+        LLVMValueRef varRef = LLVMGetNamedGlobal(module, resQualident);
+        if (varRef == null)
+            throw new IllegalArgumentException("Wrong variable's name: " + resQualident);
+
+        return varRef;
     }
 
     public String visitQualident(OberonParser.QualidentContext ctx) {
@@ -282,8 +285,9 @@ public class OberonVisitor extends OberonBaseVisitor {
         else if (ctx.set_() != null)
             throw new UnsupportedOperationException("SET_ NOT SUPPORTED YET"); //todo
         else if (ctx.designator() != null) {
-//            res = visitDesignator(ctx.designator());
-            throw new UnsupportedOperationException("DESIGNATOR IN FACTOR NOT SUPPORTED YET"); //TODO
+            LLVMValueRef varRef = visitDesignator(ctx.designator());
+            String varName = LLVMGetValueName(varRef).getString();
+            res = LLVMBuildLoad2(builder, LLVMTypeOf(LLVMGetOperand(varRef, 0)), varRef, varName + "_value");
         }
         else if (ctx.expression() != null)
 //            res = visitExpression(ctx.expression());
@@ -316,10 +320,6 @@ public class OberonVisitor extends OberonBaseVisitor {
 //        Object res = visitScaleFactor(ctx.scaleFactor());
         return null; //todo
     }
-
-//    public Object visitScaleFactor(OberonParser.ScaleFactorContext ctx) {
-//        return ctx.getText(); //todo check
-//    }
 
     public Object visitMulOperator(OberonParser.MulOperatorContext ctx) {
         throw new UnsupportedOperationException("MULOPERATOR NOT SUPPORTED YET"); //todo

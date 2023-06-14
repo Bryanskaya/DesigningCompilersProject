@@ -222,7 +222,7 @@ formalType
    ;
 
 module
-   : MODULE ident ';' importList? declarationSequence (BEGIN statementSequence)? END ident '.' EOF
+   : MODULE ident ';' importList? declarationSequence (BEGIN statementSequence)? RETURN factor ';' END ident '.' EOF
    ;
 
 importList
