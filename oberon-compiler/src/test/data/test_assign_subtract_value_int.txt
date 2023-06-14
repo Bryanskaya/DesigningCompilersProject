@@ -1,0 +1,12 @@
+MODULE hello;
+VAR n, m, k, l:INTEGER;
+
+BEGIN
+    l := -10;
+    n := 1 - 1024;
+    m := 1024 - 1;
+    k := 2 + 1 - 3;
+    l := l - k - 1;
+
+    RETURN l;
+END hello.

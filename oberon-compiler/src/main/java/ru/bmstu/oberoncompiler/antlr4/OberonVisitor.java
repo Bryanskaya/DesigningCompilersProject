@@ -10,9 +10,13 @@ import org.springframework.stereotype.Service;
 import ru.bmstu.oberoncompiler.antlr4.config.AppParams;
 import ru.bmstu.oberoncompiler.antlr4.exception.WrongModuleNameException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
 import static org.bytedeco.llvm.global.LLVM.*;
 
@@ -259,48 +263,70 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         LLVMValueRef resTermLeft = visitTerm(ctx.term(0));
 
-        if (signChar == '-') {
-            LLVMTypeRef typeLeftRef = LLVMTypeOf(resTermLeft);
-            if (LLVMGetTypeKind(typeLeftRef) == LLVMIntegerTypeKind) {
-                LLVMValueRef minusOne = LLVMConstInt(typeLeftRef, -1, 0);
-                resTermLeft = LLVMBuildMul(builder, resTermLeft, minusOne, "mul_minus_one");
-            }
-            else {
-                LLVMValueRef minusOne = LLVMConstReal(typeLeftRef, -1.0);
-                resTermLeft = LLVMBuildFMul(builder, resTermLeft, minusOne, "mul_minus_one");
-            }
-        }
+        if (signChar == '-')
+            resTermLeft = invert(resTermLeft);
 
         for (int i = 0; i < ctx.addOperator().size(); i++) {
             String resAddOperator = visitAddOperator(ctx.addOperator(i));
             LLVMValueRef resTermRight = visitTerm(ctx.term(i + 1));
 
-            switch (resAddOperator) {
-                case "+":
-                    LLVMTypeRef typeLeftRef = LLVMTypeOf(resTermLeft);
-                    LLVMTypeRef typeRightRef = LLVMTypeOf(resTermRight);
-                    int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
-                    int kindTypeRight = LLVMGetTypeKind(typeRightRef);
-
-                    if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
-                        resTermLeft = LLVMBuildAdd(builder, resTermLeft, resTermRight, "add_result");
-                    else {
-                        if (kindTypeLeft == LLVMIntegerTypeKind)
-                            resTermLeft = LLVMBuildSIToFP(builder, resTermLeft, LLVMDoubleType(), "upd_type");
-                        else if (kindTypeRight == LLVMIntegerTypeKind)
-                            resTermRight = LLVMBuildSIToFP(builder, resTermRight, LLVMDoubleType(), "upd_type");
-                        resTermLeft = LLVMBuildFAdd(builder, resTermLeft, resTermRight, "add_result");
-                    }
-
-                    break;
-                case "-":
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Operator " + resAddOperator + " NOT SUPPORTED YET");
-            }
+            resTermLeft = switch (resAddOperator) {
+                case "+" -> add(resTermLeft, resTermRight);
+                case "-" -> subtract(resTermLeft, resTermRight);
+                default -> throw new UnsupportedOperationException("Operator " + resAddOperator + " NOT SUPPORTED YET");
+            };
         }
 
-        return resTermLeft; //todo
+        return resTermLeft;
+    }
+    private LLVMValueRef invert(LLVMValueRef term) {
+        LLVMTypeRef typeLeftRef = LLVMTypeOf(term);
+        if (LLVMGetTypeKind(typeLeftRef) == LLVMIntegerTypeKind) {
+            LLVMValueRef minusOne = LLVMConstInt(typeLeftRef, -1, 0);
+            term = LLVMBuildMul(builder, term, minusOne, "mul_minus_one");
+        }
+        else {
+            LLVMValueRef minusOne = LLVMConstReal(typeLeftRef, -1.0);
+            term = LLVMBuildFMul(builder, term, minusOne, "mul_minus_one");
+        }
+
+        return term;
+    }
+    private LLVMValueRef add(LLVMValueRef termLeft, LLVMValueRef termRight) {
+        LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
+        LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
+        int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
+        int kindTypeRight = LLVMGetTypeKind(typeRightRef);
+
+        if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
+            termLeft = LLVMBuildAdd(builder, termLeft, termRight, "add_result");
+        else {
+            if (kindTypeLeft == LLVMIntegerTypeKind)
+                termLeft = LLVMBuildSIToFP(builder, termLeft, LLVMDoubleType(), "upd_type");
+            else if (kindTypeRight == LLVMIntegerTypeKind)
+                termRight = LLVMBuildSIToFP(builder, termRight, LLVMDoubleType(), "upd_type");
+            termLeft = LLVMBuildFAdd(builder, termLeft, termRight, "add_result");
+        }
+
+        return termLeft;
+    }
+    private LLVMValueRef subtract(LLVMValueRef termLeft, LLVMValueRef termRight) {
+        LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
+        LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
+        int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
+        int kindTypeRight = LLVMGetTypeKind(typeRightRef);
+
+        if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
+            termLeft = LLVMBuildSub(builder, termLeft, termRight, "subtract_result");
+        else {
+            if (kindTypeLeft == LLVMIntegerTypeKind)
+                termLeft = LLVMBuildSIToFP(builder, termLeft, LLVMDoubleType(), "upd_type");
+            else if (kindTypeRight == LLVMIntegerTypeKind)
+                termRight = LLVMBuildSIToFP(builder, termRight, LLVMDoubleType(), "upd_type");
+            termLeft = LLVMBuildFSub(builder, termLeft, termRight, "subtract_result");
+        }
+
+        return termLeft;
     }
 
     public Object visitRelation(OberonParser.RelationContext ctx) {
