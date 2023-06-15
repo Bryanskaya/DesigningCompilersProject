@@ -244,16 +244,16 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public LLVMValueRef visitExpression(OberonParser.ExpressionContext ctx) {
-        LLVMValueRef resSimpleExp0 = visitSimpleExpression(ctx.simpleExpression(0)); //todo return value
+        LLVMValueRef resSimpleExpLeft = visitSimpleExpression(ctx.simpleExpression(0));
 
         if (ctx.simpleExpression().size() == 2) {
             Object resRelation = visitRelation(ctx.relation()); //todo return value
-            LLVMValueRef resSimpleExp1 = visitSimpleExpression(ctx.simpleExpression(1)); //todo return value
+            LLVMValueRef resSimpleExpRight = visitSimpleExpression(ctx.simpleExpression(1)); //todo return value
 
             //todo logic with return values
         }
 
-        return resSimpleExp0; //TODO
+        return resSimpleExpLeft; //TODO
     }
 
     public LLVMValueRef visitSimpleExpression(OberonParser.SimpleExpressionContext ctx) {
@@ -384,8 +384,7 @@ public class OberonVisitor extends OberonBaseVisitor {
             res = LLVMBuildLoad2(builder, LLVMTypeOf(LLVMGetOperand(varRef, 0)), varRef, varName + "_value");
         }
         else if (ctx.expression() != null)
-//            res = visitExpression(ctx.expression());
-            throw new UnsupportedOperationException("EXPRESSION IN FACTOR NOT SUPPORTED YET"); //TODO
+            res = visitExpression(ctx.expression());
         else if (ctx.factor() != null)
             res = visitFactor(ctx.factor());
         else
