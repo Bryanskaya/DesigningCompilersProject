@@ -269,8 +269,8 @@ public class OberonVisitor extends OberonBaseVisitor {
             LLVMValueRef resTermRight = visitTerm(ctx.term(i + 1));
 
             resTermLeft = switch (resAddOperator) {
-                case "+" -> mathOperation(resTermLeft, resTermRight, LLVM::LLVMBuildAdd, LLVM::LLVMBuildFAdd);
-                case "-" -> mathOperation(resTermLeft, resTermRight, LLVM::LLVMBuildSub, LLVM::LLVMBuildFSub);
+                case "+" -> mathOperationIntRealBoth(resTermLeft, resTermRight, LLVM::LLVMBuildAdd, LLVM::LLVMBuildFAdd);
+                case "-" -> mathOperationIntRealBoth(resTermLeft, resTermRight, LLVM::LLVMBuildSub, LLVM::LLVMBuildFSub);
                 default -> throw new UnsupportedOperationException("Operator " + resAddOperator + " NOT SUPPORTED YET");
             };
         }
@@ -290,9 +290,9 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         return term;
     }
-    private LLVMValueRef mathOperation(LLVMValueRef termLeft, LLVMValueRef termRight,
-                                       QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> funcInt,
-                                       QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> funcReal) {
+    private LLVMValueRef mathOperationIntRealBoth(LLVMValueRef termLeft, LLVMValueRef termRight,
+                                                  QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> funcInt,
+                                                  QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> funcReal) {
         LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
         LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
         int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
@@ -322,16 +322,50 @@ public class OberonVisitor extends OberonBaseVisitor {
             LLVMValueRef resFactorRight = visitFactor(ctx.factor(i + 1));
 
             resFactorLeft = switch (resMulOp) {
-                case "*" -> mathOperation(resFactorLeft, resFactorRight, LLVM::LLVMBuildMul, LLVM::LLVMBuildFMul);
-                case "/" -> throw new UnsupportedOperationException("DIVISION OPERATION IN TERM NOT SUPPORTED YET");
-                case "DIV" -> throw new UnsupportedOperationException("DIV OPERATION IN TERM NOT SUPPORTED YET");
-                case "MOD" -> throw new UnsupportedOperationException("MOD OPERATION IN TERM NOT SUPPORTED YET");
+                case "*" -> mathOperationIntRealBoth(resFactorLeft, resFactorRight, LLVM::LLVMBuildMul, LLVM::LLVMBuildFMul);
+                case "/" -> mathOperationRealBoth(resFactorLeft, resFactorRight, LLVM::LLVMBuildFDiv);
+                case "DIV" -> mathOperationInt(resFactorLeft, resFactorRight, LLVM::LLVMBuildSDiv);
+                case "MOD" -> mathOperationInt(resFactorLeft, resFactorRight, LLVM::LLVMBuildSRem);
                 case "&" -> throw new UnsupportedOperationException("& OPERATION IN TERM NOT SUPPORTED YET");
                 default -> throw new UnsupportedOperationException("Operator " + resMulOp + " NOT SUPPORTED YET");
             };
         }
 
         return resFactorLeft;
+    }
+    private LLVMValueRef mathOperationRealBoth(LLVMValueRef termLeft, LLVMValueRef termRight,
+                                               QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> func) {
+        LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
+        LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
+        int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
+        int kindTypeRight = LLVMGetTypeKind(typeRightRef);
+
+        if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
+            throw new IllegalArgumentException("Operand / is not used for operators of INTEGER type");
+        else {
+            if (kindTypeLeft == LLVMIntegerTypeKind)
+                termLeft = LLVMBuildSIToFP(builder, termLeft, LLVMDoubleType(), "upd_type");
+            else if (kindTypeRight == LLVMIntegerTypeKind)
+                termRight = LLVMBuildSIToFP(builder, termRight, LLVMDoubleType(), "upd_type");
+            termLeft = func.apply(builder, termLeft, termRight, "math_operation_real");
+        }
+
+        return termLeft;
+    }
+    private LLVMValueRef mathOperationInt(LLVMValueRef termLeft, LLVMValueRef termRight,
+                                          QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> func) {
+        LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
+        LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
+        int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
+        int kindTypeRight = LLVMGetTypeKind(typeRightRef);
+
+        if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
+            termLeft = func.apply(builder, termLeft, termRight, "math_operation_int");
+        else {
+            throw new UnsupportedOperationException("Operand DIV is not used for operators of REAL type");
+        }
+
+        return termLeft;
     }
 
     public String visitAddOperator(OberonParser.AddOperatorContext ctx) {

@@ -1,0 +1,22 @@
+MODULE hello;
+VAR
+    n, m:INTEGER;
+    k:REAL;
+
+BEGIN
+    k := 2.0 / 5.0;
+    k := -3.0 / 1.0;
+    k := 3.0 / 2.0;
+
+    n := 10 DIV 2;
+    n := 2 DIV 4;
+    n := -5 DIV 2;
+    n := 0 DIV 5;
+
+    m := 10 MOD 2;
+    m := 3 MOD 4;
+    m := 5 MOD 3;
+    m := 0 MOD 5;
+
+    RETURN 0;
+END hello.
