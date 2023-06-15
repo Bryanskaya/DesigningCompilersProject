@@ -1,0 +1,10 @@
+MODULE hello;
+VAR n, m:INTEGER;
+
+BEGIN
+    n := -5;
+    m := 20;
+    n := -n * m;
+
+    RETURN n;
+END hello.

@@ -5,18 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import oberon.antlr4.OberonBaseVisitor;
 import oberon.antlr4.OberonParser;
 import org.bytedeco.llvm.LLVM.*;
+import org.bytedeco.llvm.global.LLVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.bmstu.oberoncompiler.antlr4.config.AppParams;
 import ru.bmstu.oberoncompiler.antlr4.exception.WrongModuleNameException;
+import ru.bmstu.oberoncompiler.antlr4.utils.QuadFunction;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 import static org.bytedeco.llvm.global.LLVM.*;
 
@@ -271,8 +269,8 @@ public class OberonVisitor extends OberonBaseVisitor {
             LLVMValueRef resTermRight = visitTerm(ctx.term(i + 1));
 
             resTermLeft = switch (resAddOperator) {
-                case "+" -> add(resTermLeft, resTermRight);
-                case "-" -> subtract(resTermLeft, resTermRight);
+                case "+" -> mathOperation(resTermLeft, resTermRight, LLVM::LLVMBuildAdd, LLVM::LLVMBuildFAdd);
+                case "-" -> mathOperation(resTermLeft, resTermRight, LLVM::LLVMBuildSub, LLVM::LLVMBuildFSub);
                 default -> throw new UnsupportedOperationException("Operator " + resAddOperator + " NOT SUPPORTED YET");
             };
         }
@@ -292,38 +290,22 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         return term;
     }
-    private LLVMValueRef add(LLVMValueRef termLeft, LLVMValueRef termRight) {
+    private LLVMValueRef mathOperation(LLVMValueRef termLeft, LLVMValueRef termRight,
+                                       QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> funcInt,
+                                       QuadFunction<LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String, LLVMValueRef> funcReal) {
         LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
         LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
         int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
         int kindTypeRight = LLVMGetTypeKind(typeRightRef);
 
         if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
-            termLeft = LLVMBuildAdd(builder, termLeft, termRight, "add_result");
+            termLeft = funcInt.apply(builder, termLeft, termRight, "math_operation_int");
         else {
             if (kindTypeLeft == LLVMIntegerTypeKind)
                 termLeft = LLVMBuildSIToFP(builder, termLeft, LLVMDoubleType(), "upd_type");
             else if (kindTypeRight == LLVMIntegerTypeKind)
                 termRight = LLVMBuildSIToFP(builder, termRight, LLVMDoubleType(), "upd_type");
-            termLeft = LLVMBuildFAdd(builder, termLeft, termRight, "add_result");
-        }
-
-        return termLeft;
-    }
-    private LLVMValueRef subtract(LLVMValueRef termLeft, LLVMValueRef termRight) {
-        LLVMTypeRef typeLeftRef = LLVMTypeOf(termLeft);
-        LLVMTypeRef typeRightRef = LLVMTypeOf(termRight);
-        int kindTypeLeft = LLVMGetTypeKind(typeLeftRef);
-        int kindTypeRight = LLVMGetTypeKind(typeRightRef);
-
-        if (kindTypeLeft == kindTypeRight && kindTypeLeft == LLVMIntegerTypeKind)
-            termLeft = LLVMBuildSub(builder, termLeft, termRight, "subtract_result");
-        else {
-            if (kindTypeLeft == LLVMIntegerTypeKind)
-                termLeft = LLVMBuildSIToFP(builder, termLeft, LLVMDoubleType(), "upd_type");
-            else if (kindTypeRight == LLVMIntegerTypeKind)
-                termRight = LLVMBuildSIToFP(builder, termRight, LLVMDoubleType(), "upd_type");
-            termLeft = LLVMBuildFSub(builder, termLeft, termRight, "subtract_result");
+            termLeft = funcReal.apply(builder, termLeft, termRight, "math_operation_real");
         }
 
         return termLeft;
@@ -334,14 +316,22 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public LLVMValueRef visitTerm(OberonParser.TermContext ctx) {
-        LLVMValueRef resFactor0 = visitFactor(ctx.factor(0));
+        LLVMValueRef resFactorLeft = visitFactor(ctx.factor(0));
         for (int i = 0; i < ctx.mulOperator().size(); i++) {
-            Object resMulOp = visitMulOperator(ctx.mulOperator(i)); //todo return value
-            LLVMValueRef resFactor1 = visitFactor(ctx.factor(i + 1)); //todo return value
-            //todo logic
+            String resMulOp = visitMulOperator(ctx.mulOperator(i));
+            LLVMValueRef resFactorRight = visitFactor(ctx.factor(i + 1));
+
+            resFactorLeft = switch (resMulOp) {
+                case "*" -> mathOperation(resFactorLeft, resFactorRight, LLVM::LLVMBuildMul, LLVM::LLVMBuildFMul);
+                case "/" -> throw new UnsupportedOperationException("DIVISION OPERATION IN TERM NOT SUPPORTED YET");
+                case "DIV" -> throw new UnsupportedOperationException("DIV OPERATION IN TERM NOT SUPPORTED YET");
+                case "MOD" -> throw new UnsupportedOperationException("MOD OPERATION IN TERM NOT SUPPORTED YET");
+                case "&" -> throw new UnsupportedOperationException("& OPERATION IN TERM NOT SUPPORTED YET");
+                default -> throw new UnsupportedOperationException("Operator " + resMulOp + " NOT SUPPORTED YET");
+            };
         }
 
-        return resFactor0;
+        return resFactorLeft;
     }
 
     public String visitAddOperator(OberonParser.AddOperatorContext ctx) {
@@ -388,7 +378,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         return LLVMConstReal(LLVMDoubleType(), Double.parseDouble(ctx.getText()));
     }
 
-    public Object visitMulOperator(OberonParser.MulOperatorContext ctx) {
-        throw new UnsupportedOperationException("MULOPERATOR NOT SUPPORTED YET"); //todo
+    public String visitMulOperator(OberonParser.MulOperatorContext ctx) {
+        return ctx.getText();
     }
 }
