@@ -4,6 +4,7 @@ package ru.bmstu.oberoncompiler.antlr4.impl;
 import lombok.extern.slf4j.Slf4j;
 import oberon.antlr4.OberonBaseVisitor;
 import oberon.antlr4.OberonParser;
+import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.llvm.LLVM.*;
 import org.bytedeco.llvm.global.LLVM;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,13 @@ import ru.bmstu.oberoncompiler.antlr4.exception.WrongModuleNameException;
 import ru.bmstu.oberoncompiler.antlr4.utils.QuadFunction;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import static org.bytedeco.llvm.global.LLVM.*;
+import static org.bytedeco.llvm.global.LLVM.LLVMDumpType;
+import static ru.bmstu.oberoncompiler.antlr4.config.Attributes.ELEMENT_TYPE;
 
 @Slf4j
 @Service
@@ -27,12 +31,13 @@ public class OberonVisitor extends OberonBaseVisitor {
     private final LLVMContextRef context = LLVMContextCreate();;
     private LLVMBuilderRef builder;
     private LLVMModuleRef module;
+    private HashMap<String, LLVMTypeRef> varTypeMap = new HashMap<>();
 
     private void initLLVMComponents() {
-//        LLVMLinkInMCJIT();
+        LLVMLinkInMCJIT();
         LLVMInitializeNativeAsmPrinter();
         LLVMInitializeNativeAsmParser();
-//        LLVMInitializeNativeDisassembler();
+        LLVMInitializeNativeDisassembler();
         LLVMInitializeNativeTarget();
     }
 
@@ -113,28 +118,36 @@ public class OberonVisitor extends OberonBaseVisitor {
      */
     public Object visitVariableDeclaration(OberonParser.VariableDeclarationContext ctx) {
         List<String> resIdentList = visitIdentList(ctx.identList()); //todo return value
-        String resType_ = visitType_(ctx.type_()); //todo return value
+        LLVMTypeRef resType_ = visitType_(ctx.type_());
+        int typeKind = LLVMGetTypeKind(resType_);
 
         for (String ident : resIdentList) {
-            LLVMValueRef value;
-            switch (resType_) {
-                case "INTEGER":
-                    value = LLVMAddGlobal(module, LLVMInt32Type(), ident);
-                    LLVMSetInitializer(value, LLVMConstInt(LLVMInt32Type(), 0, 1));
-                    break;
-                case "REAL":
-                    LLVMTypeRef doubleType = LLVMDoubleType();
-                    value = LLVMAddGlobal(module, doubleType, ident);
-                    LLVMValueRef initValue = LLVMConstReal(doubleType, 0);
-                    LLVMSetInitializer(value, initValue);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unsupported variable type: " + resType_);
-            }
+            LLVMValueRef value = LLVMAddGlobal(module, resType_, ident);
+//            LLVMValueRef initValue = getInitValue(typeKind, resType_);
+//            LLVMSetInitializer(value, initValue);
+
+            LLVMSetInitializer(value, LLVMConstNull(resType_));
+
             LLVMSetLinkage(value, LLVMCommonLinkage);
+            varTypeMap.put(ident, resType_);
         }
 
-        return null; //todo
+        return null;
+    }
+    private LLVMValueRef getInitValue(int typeKind, LLVMTypeRef resType_) {
+        LLVMValueRef initValue;
+        switch (typeKind) {
+            case LLVMIntegerTypeKind -> initValue = LLVMConstInt(resType_, 0, 1);
+            case LLVMDoubleTypeKind -> initValue = LLVMConstReal(resType_, 0);
+            case LLVMArrayTypeKind -> {
+                LLVMTypeRef typeKindElemRef = LLVMGetElementType(resType_);
+                int typeKindElem = LLVMGetTypeKind(typeKindElemRef);
+                initValue = getInitValue(typeKindElem, typeKindElemRef);
+            }
+            default -> throw new IllegalArgumentException("Unsupported variable type: " + resType_);
+        }
+
+        return initValue;
     }
 
     public List<String> visitIdentList(OberonParser.IdentListContext ctx) {
@@ -150,18 +163,39 @@ public class OberonVisitor extends OberonBaseVisitor {
      * @param ctx type context
      * @return Object
      */
-    public String visitType_(OberonParser.Type_Context ctx) { //todo type
-        String res = null;
-        if (ctx.qualident() != null)
-            res = visitQualident(ctx.qualident());
+    public LLVMTypeRef visitType_(OberonParser.Type_Context ctx) { //todo type
+        LLVMTypeRef res = null;
+        if (ctx.qualident() != null) {
+            String typeStr = visitQualident(ctx.qualident());
+            res = switch (typeStr) {
+                case "INTEGER" -> LLVMInt32Type();
+                case "REAL" -> LLVMDoubleType();
+                default -> throw new IllegalArgumentException("Unsupported variable type: " + typeStr);
+            };
+        }
         else if (ctx.arrayType() != null)
-            throw new UnsupportedOperationException("ARRAYTYPE NOT SUPPORTED YET"); //TODO
+            res = visitArrayType(ctx.arrayType());
         else if (ctx.pointerType() != null)
             throw new UnsupportedOperationException("POINTERTYPE NOT SUPPORTED YET"); //TODO
         else if (ctx.procedureType() != null)
             throw new UnsupportedOperationException("PROCEDURETYPE NOT SUPPORTED YET"); //TODO
 
         return res; //todo
+    }
+
+    public LLVMTypeRef visitArrayType(OberonParser.ArrayTypeContext ctx) {
+        LLVMValueRef lengthRef = visitLength(ctx.length());
+        LLVMTypeRef type_ = visitType_(ctx.type_());
+
+        return LLVMArrayType(type_, (int) LLVMConstIntGetSExtValue(lengthRef));
+    }
+
+    public LLVMValueRef visitLength(OberonParser.LengthContext ctx) {
+        return visitConstExpression(ctx.constExpression());
+    }
+
+    public LLVMValueRef visitConstExpression(OberonParser.ConstExpressionContext ctx) {
+        return visitExpression(ctx.expression());
     }
 
     /**
@@ -210,15 +244,47 @@ public class OberonVisitor extends OberonBaseVisitor {
 
     public LLVMValueRef visitDesignator(OberonParser.DesignatorContext ctx) {
         String resQualident = visitQualident(ctx.qualident());
-        for (OberonParser.SelectorContext selector : ctx.selector()) {
-//            visitSelector(selector); //todo return value
-            throw new UnsupportedOperationException("SELECTOR NOT SUPPORTED YET");
-        }
 
         LLVMValueRef varRef = LLVMGetNamedGlobal(module, resQualident);
         if (varRef == null)
             throw new IllegalArgumentException("Wrong variable's name: " + resQualident);
 
+        LLVMValueRef valueSelector;
+        for (OberonParser.SelectorContext selector : ctx.selector()) {
+            valueSelector = visitSelector(selector);
+
+            if (valueSelector != null) {
+                LLVMValueRef[] indexArr = {
+                        LLVMConstInt(LLVMInt32Type(), 0, 0),
+                        LLVMConstInt(LLVMInt32Type(), LLVMConstIntGetSExtValue(valueSelector), 0)
+                };
+
+                varRef = LLVMBuildGEP2(builder, varTypeMap.get(resQualident), varRef,
+                        new PointerPointer<>(indexArr), indexArr.length, "arr_element_ptr");
+                varRef = new ValueRef(varRef, LLVMInt32Type());
+//                varRef = LLVMBuildBitCast(builder, varRef, LLVMPointerType(LLVMInt32Type(), 0), "gep_cast");
+            }
+
+            //todo не очень корректно работает
+        }
+
+        return varRef;
+    }
+    private LLVMValueRef setFuncAttribute(LLVMValueRef varRef) {
+        int kind = LLVMGetEnumAttributeKindForName(String.valueOf(ELEMENT_TYPE), ELEMENT_TYPE.toString().length());
+        LLVMAttributeRef elementType;
+
+        if (kind != 0)
+            elementType = LLVMCreateEnumAttribute(context, kind, LLVMIntegerTypeKind);
+        else {
+            String deleteIt = "TRUE";
+            elementType = LLVMCreateStringAttribute(context, String.valueOf(ELEMENT_TYPE), ELEMENT_TYPE.toString().length(), deleteIt, deleteIt.length());
+            kind = LLVMGetEnumAttributeKindForName(String.valueOf(ELEMENT_TYPE), ELEMENT_TYPE.toString().length());
+
+            elementType = LLVMCreateEnumAttribute(context, 1024, LLVMIntegerTypeKind);
+        }
+
+        LLVMAddAttributeAtIndex(varRef, LLVMAttributeReturnIndex, elementType);
         return varRef;
     }
 
@@ -226,21 +292,21 @@ public class OberonVisitor extends OberonBaseVisitor {
         return visitIdent(ctx.ident());
     }
 
-    public Object visitSelector(OberonParser.SelectorContext ctx) {
-        Object res = null;
+    public LLVMValueRef visitSelector(OberonParser.SelectorContext ctx) {
+        LLVMValueRef res = null;
         if (ctx.expList() != null)
-            res = visitExpList(ctx.expList());  //todo return value
+            res = visitExpList(ctx.expList());
 
-        return res; //todo
+        return res;
     }
 
-    public Object visitExpList(OberonParser.ExpListContext ctx) {
-        Object resExp0 = visitExpression(ctx.expression(0)); //todo return value
+    public LLVMValueRef visitExpList(OberonParser.ExpListContext ctx) {
+        LLVMValueRef expLeft = visitExpression(ctx.expression(0)); //todo return value
         for (int i = 1; i < ctx.expression().size(); i++) {
-            Object resExp1 = visitExpression(ctx.expression(i)); //todo return value
+            Object expRight = visitExpression(ctx.expression(i)); //todo return value
         }
 
-        return null; //todo
+        return expLeft; //todo
     }
 
     public LLVMValueRef visitExpression(OberonParser.ExpressionContext ctx) {
@@ -380,8 +446,16 @@ public class OberonVisitor extends OberonBaseVisitor {
             throw new UnsupportedOperationException("SET_ NOT SUPPORTED YET"); //todo
         else if (ctx.designator() != null) {
             LLVMValueRef varRef = visitDesignator(ctx.designator());
-            String varName = LLVMGetValueName(varRef).getString();
-            res = LLVMBuildLoad2(builder, LLVMTypeOf(LLVMGetOperand(varRef, 0)), varRef, varName + "_value");
+            LLVMTypeRef loadType = (varRef instanceof ValueRef) ?
+                    ((ValueRef) varRef).elemType : LLVMTypeOf(LLVMGetOperand(varRef, 0));
+
+            res = LLVMBuildLoad2(builder, loadType, varRef, "value");
+//            res = LLVMBuildLoad2(builder, LLVMTypeOf(varRef), varRef, "value");
+//            res = LLVMBuildLoad2(builder, varTypeMap.get(varName), varRef, varName + "_value");
+//            LLVMTypeRef varTypeRef = LLVMTypeOf(varRef);
+//            if (LLVMGetTypeKind(varTypeRef) == LLVMArrayTypeKind)
+//                varTypeRef = LLVMInt32Type();
+//            res = LLVMBuildLoad2(builder, varTypeRef, varRef, "value");
         }
         else if (ctx.expression() != null)
             res = visitExpression(ctx.expression());
