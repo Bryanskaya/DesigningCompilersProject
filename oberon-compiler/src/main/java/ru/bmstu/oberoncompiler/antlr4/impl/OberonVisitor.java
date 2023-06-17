@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.bytedeco.llvm.global.LLVM.*;
-import static org.bytedeco.llvm.global.LLVM.LLVMDumpType;
-import static ru.bmstu.oberoncompiler.antlr4.config.Attributes.ELEMENT_TYPE;
 
 @Slf4j
 @Service
@@ -262,29 +260,11 @@ public class OberonVisitor extends OberonBaseVisitor {
                 varRef = LLVMBuildGEP2(builder, varTypeMap.get(resQualident), varRef,
                         new PointerPointer<>(indexArr), indexArr.length, "arr_element_ptr");
                 varRef = new ValueRef(varRef, LLVMInt32Type());
-//                varRef = LLVMBuildBitCast(builder, varRef, LLVMPointerType(LLVMInt32Type(), 0), "gep_cast");
             }
 
             //todo не очень корректно работает
         }
 
-        return varRef;
-    }
-    private LLVMValueRef setFuncAttribute(LLVMValueRef varRef) {
-        int kind = LLVMGetEnumAttributeKindForName(String.valueOf(ELEMENT_TYPE), ELEMENT_TYPE.toString().length());
-        LLVMAttributeRef elementType;
-
-        if (kind != 0)
-            elementType = LLVMCreateEnumAttribute(context, kind, LLVMIntegerTypeKind);
-        else {
-            String deleteIt = "TRUE";
-            elementType = LLVMCreateStringAttribute(context, String.valueOf(ELEMENT_TYPE), ELEMENT_TYPE.toString().length(), deleteIt, deleteIt.length());
-            kind = LLVMGetEnumAttributeKindForName(String.valueOf(ELEMENT_TYPE), ELEMENT_TYPE.toString().length());
-
-            elementType = LLVMCreateEnumAttribute(context, 1024, LLVMIntegerTypeKind);
-        }
-
-        LLVMAddAttributeAtIndex(varRef, LLVMAttributeReturnIndex, elementType);
         return varRef;
     }
 
@@ -450,12 +430,6 @@ public class OberonVisitor extends OberonBaseVisitor {
                     ((ValueRef) varRef).elemType : LLVMTypeOf(LLVMGetOperand(varRef, 0));
 
             res = LLVMBuildLoad2(builder, loadType, varRef, "value");
-//            res = LLVMBuildLoad2(builder, LLVMTypeOf(varRef), varRef, "value");
-//            res = LLVMBuildLoad2(builder, varTypeMap.get(varName), varRef, varName + "_value");
-//            LLVMTypeRef varTypeRef = LLVMTypeOf(varRef);
-//            if (LLVMGetTypeKind(varTypeRef) == LLVMArrayTypeKind)
-//                varTypeRef = LLVMInt32Type();
-//            res = LLVMBuildLoad2(builder, varTypeRef, varRef, "value");
         }
         else if (ctx.expression() != null)
             res = visitExpression(ctx.expression());

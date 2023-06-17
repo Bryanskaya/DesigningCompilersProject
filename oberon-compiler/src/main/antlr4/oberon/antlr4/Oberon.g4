@@ -47,7 +47,7 @@ type_
    ;
 
 arrayType
-   : ARRAY length (',' length)* OF type_
+   : ARRAY length OF type_
    ;
 
 length
