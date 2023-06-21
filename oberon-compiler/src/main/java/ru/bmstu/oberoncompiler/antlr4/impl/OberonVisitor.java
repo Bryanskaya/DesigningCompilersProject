@@ -29,6 +29,7 @@ public class OberonVisitor extends OberonBaseVisitor {
     private final LLVMContextRef context = LLVMContextCreate();;
     private LLVMBuilderRef builder;
     private LLVMModuleRef module;
+    private LLVMValueRef function;
     private HashMap<String, LLVMTypeRef> varTypeMap = new HashMap<>();
 
     private void initLLVMComponents() {
@@ -42,13 +43,18 @@ public class OberonVisitor extends OberonBaseVisitor {
     private void initMain() {
         module = LLVMModuleCreateWithNameInContext(appParams.moduleName, context);
 
-        LLVMValueRef function = LLVMAddFunction(module, "main",
-                LLVMFunctionType(LLVMInt32Type(), LLVMInt32Type(), 0, 0));
+        function = createFunc("main", LLVMInt32Type(), LLVMInt32Type());
 
         LLVMBasicBlockRef entry = LLVMAppendBasicBlock(function, "main_entry");
 
         builder = LLVMCreateBuilderInContext(context);
         LLVMPositionBuilderAtEnd(builder, entry);
+    }
+
+    private LLVMValueRef createFunc(String funcName, LLVMTypeRef paramType, LLVMTypeRef returnType) {
+        LLVMTypeRef functionType = LLVMFunctionType(returnType, paramType, 0, 0);
+
+        return LLVMAddFunction(module, funcName, functionType);
     }
 
     public Object visitModule(OberonParser.ModuleContext ctx) {
@@ -205,7 +211,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         return visitIdent(ctx.ident()); //todo не учла что может быть указатель -- правило *
     }
 
-    public LLVMBuilderRef visitStatementSequence(OberonParser.StatementSequenceContext ctx) {
+    public LLVMValueRef visitStatementSequence(OberonParser.StatementSequenceContext ctx) {
         for (OberonParser.StatementContext statement: ctx.statement()) {
             visitStatement(statement);
         }
@@ -220,7 +226,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         else if (ctx.procedureCall() != null)
             throw new UnsupportedOperationException("PROCEDURECALL NOT SUPPORTED YET"); //TODO
         else if (ctx.ifStatement() != null)
-            throw new UnsupportedOperationException("IFSTATEMENT NOT SUPPORTED YET"); //TODO
+            res = visitIfStatement(ctx.ifStatement());
         else if (ctx.caseStatement() != null)
             throw new UnsupportedOperationException("CASESTATEMENT NOT SUPPORTED YET"); //TODO
         else if (ctx.whileStatement() != null)
@@ -238,6 +244,42 @@ public class OberonVisitor extends OberonBaseVisitor {
         LLVMBuildStore(builder, valueExpressionRef, varRef);
 
         return null; //TODO
+    }
+
+    public Object visitIfStatement(OberonParser.IfStatementContext ctx) {
+        LLVMBasicBlockRef thenBlock = LLVMAppendBasicBlock(function, "then");
+        LLVMBasicBlockRef elseBlock = LLVMAppendBasicBlock(function, "else");
+        LLVMBasicBlockRef endBlock = LLVMAppendBasicBlock(function, "end");
+
+        // if
+        LLVMValueRef expCondRef = visitExpression(ctx.expression(0));
+        LLVMBuildCondBr(builder, expCondRef, thenBlock, elseBlock);
+
+        // then
+        LLVMPositionBuilderAtEnd(builder, thenBlock);
+        LLVMValueRef statSeqIfRef = visitStatementSequence(ctx.statementSequence(0)); //todo return value
+        LLVMBuildBr(builder, endBlock);
+
+//        LLVMValueRef expInnerCondRef;
+//        Object statSeqInnerIfRef;
+//        int i = 1;
+//        for (; i < ctx.expression().size(); i++) {
+//            expInnerCondRef = visitExpression(ctx.expression(i));
+//            statSeqInnerIfRef = visitStatementSequence(ctx.statementSequence(i)); //todo return value
+//        }
+
+        // else
+        Object statSeqElseRef;
+        int i = 2;
+        if (ctx.statementSequence().size() == 2) {
+            LLVMPositionBuilderAtEnd(builder, elseBlock);
+            statSeqElseRef = visitStatementSequence(ctx.statementSequence(i - 1));
+            LLVMBuildBr(builder, endBlock);
+        }
+
+        LLVMPositionBuilderAtEnd(builder, endBlock);
+
+        return null;
     }
 
     public LLVMValueRef visitDesignator(OberonParser.DesignatorContext ctx) {
@@ -293,13 +335,21 @@ public class OberonVisitor extends OberonBaseVisitor {
         LLVMValueRef resSimpleExpLeft = visitSimpleExpression(ctx.simpleExpression(0));
 
         if (ctx.simpleExpression().size() == 2) {
-            Object resRelation = visitRelation(ctx.relation()); //todo return value
-            LLVMValueRef resSimpleExpRight = visitSimpleExpression(ctx.simpleExpression(1)); //todo return value
+            String resRelation = visitRelation(ctx.relation());
+            LLVMValueRef resSimpleExpRight = visitSimpleExpression(ctx.simpleExpression(1));
 
-            //todo logic with return values
+            resSimpleExpLeft = switch (resRelation) {
+                case "=" -> LLVMBuildICmp(builder, LLVMIntEQ, resSimpleExpLeft, resSimpleExpRight, "cmp_equal");
+                case "#" -> LLVMBuildICmp(builder, LLVMIntNE, resSimpleExpLeft, resSimpleExpRight, "cmp_unequal");
+                case "<" -> LLVMBuildICmp(builder, LLVMIntSLT, resSimpleExpLeft, resSimpleExpRight, "cmp_smaller");
+                case "<=" -> LLVMBuildICmp(builder, LLVMIntSLE, resSimpleExpLeft, resSimpleExpRight, "cmp_smaller_or_equal");
+                case ">" -> LLVMBuildICmp(builder, LLVMIntSGT, resSimpleExpLeft, resSimpleExpRight, "cmp_bigger");
+                case ">=" -> LLVMBuildICmp(builder, LLVMIntSGE, resSimpleExpLeft, resSimpleExpRight, "cmp_bigger_or_equal");
+                default -> throw new UnsupportedOperationException("Operator " + resRelation + " NOT SUPPORTED YET");
+            };
         }
 
-        return resSimpleExpLeft; //TODO
+        return resSimpleExpLeft;
     }
 
     public LLVMValueRef visitSimpleExpression(OberonParser.SimpleExpressionContext ctx) {
@@ -357,8 +407,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         return termLeft;
     }
 
-    public Object visitRelation(OberonParser.RelationContext ctx) {
-        throw new UnsupportedOperationException("RELATION NOT SUPPORTED YET"); //todo
+    public String visitRelation(OberonParser.RelationContext ctx) {
+        return ctx.getText();
     }
 
     public LLVMValueRef visitTerm(OberonParser.TermContext ctx) {

@@ -1,0 +1,16 @@
+MODULE IfElseExample;
+VAR
+    x, y, res: INTEGER;
+    arr: ARRAY 3 OF INTEGER;
+
+BEGIN
+    x := 10;
+    arr[1] := -1;
+
+    IF arr[1] < x THEN
+        res := -1;
+    ELSE
+        res := 1024;
+    END;
+    RETURN res;
+END IfElseExample.
