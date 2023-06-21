@@ -81,8 +81,6 @@ relation
    | '<='
    | '>'
    | '>='
-   | IN
-   | IS
    ;
 
 simpleExpression
@@ -255,14 +253,6 @@ TO
 
 PROCEDURE
    : 'PROCEDURE'
-   ;
-
-IN
-   : 'IN'
-   ;
-
-IS
-   : 'IS'
    ;
 
 OR
