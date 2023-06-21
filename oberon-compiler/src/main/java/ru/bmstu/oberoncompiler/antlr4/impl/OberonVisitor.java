@@ -257,7 +257,7 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         // then
         LLVMPositionBuilderAtEnd(builder, thenBlock);
-        LLVMValueRef statSeqIfRef = visitStatementSequence(ctx.statementSequence(0)); //todo return value
+        visitStatementSequence(ctx.statementSequence(0)); //todo return value
         LLVMBuildBr(builder, endBlock);
 
 //        LLVMValueRef expInnerCondRef;
@@ -273,7 +273,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         int i = 2;
         if (ctx.statementSequence().size() == 2) {
             LLVMPositionBuilderAtEnd(builder, elseBlock);
-            statSeqElseRef = visitStatementSequence(ctx.statementSequence(i - 1));
+            visitStatementSequence(ctx.statementSequence(i - 1));
             LLVMBuildBr(builder, endBlock);
         }
 
