@@ -260,6 +260,9 @@ public class OberonVisitor extends OberonBaseVisitor {
         visitStatementSequence(ctx.statementSequence(0)); //todo return value
         LLVMBuildBr(builder, endBlock);
 
+        if (ctx.expression().size() > 1)
+            throw new UnsupportedOperationException("SEVERAL expressions NOT SUPPORTED YET");
+
 //        LLVMValueRef expInnerCondRef;
 //        Object statSeqInnerIfRef;
 //        int i = 1;
@@ -422,7 +425,7 @@ public class OberonVisitor extends OberonBaseVisitor {
                 case "/" -> mathOperationRealBoth(resFactorLeft, resFactorRight, LLVM::LLVMBuildFDiv);
                 case "DIV" -> mathOperationInt(resFactorLeft, resFactorRight, LLVM::LLVMBuildSDiv);
                 case "MOD" -> mathOperationInt(resFactorLeft, resFactorRight, LLVM::LLVMBuildSRem);
-                case "&" -> throw new UnsupportedOperationException("& OPERATION IN TERM NOT SUPPORTED YET");
+                case "&" -> LLVMBuildAnd(builder, resFactorLeft, resFactorRight, "and_condition");
                 default -> throw new UnsupportedOperationException("Operator " + resMulOp + " NOT SUPPORTED YET");
             };
         }
