@@ -1,0 +1,12 @@
+MODULE IfElseExample;
+VAR
+    x: INTEGER;
+
+BEGIN
+    x := 10;
+
+    IF x < 0 THEN
+        x := 1;
+    END;
+    RETURN x;
+END IfElseExample.

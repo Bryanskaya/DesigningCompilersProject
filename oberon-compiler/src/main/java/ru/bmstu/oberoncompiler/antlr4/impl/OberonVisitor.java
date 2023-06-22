@@ -231,32 +231,64 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public Object visitIfStatement(OberonParser.IfStatementContext ctx) {
-        LLVMBasicBlockRef thenBlock = LLVMAppendBasicBlock(function, "then");
-        LLVMBasicBlockRef elseBlock = LLVMAppendBasicBlock(function, "else");
+        LLVMBasicBlockRef thenBlock;
+        LLVMBasicBlockRef nextBlock = LLVMAppendBasicBlock(function, "next");
         LLVMBasicBlockRef endBlock = LLVMAppendBasicBlock(function, "end");
 
-        // if
-        LLVMValueRef expCondRef = visitExpression(ctx.expression(0));
-        LLVMBuildCondBr(builder, expCondRef, thenBlock, elseBlock);
+        LLVMBuildBr(builder, nextBlock);
 
-        // then
-        LLVMPositionBuilderAtEnd(builder, thenBlock);
-        visitStatementSequence(ctx.statementSequence(0)); //todo return value
-        LLVMBuildBr(builder, endBlock);
+        for (int i = 0; i < ctx.expression().size(); i++) {
+            LLVMPositionBuilderAtEnd(builder, nextBlock);
 
-        if (ctx.expression().size() > 1)
-            throw new UnsupportedOperationException("SEVERAL expressions NOT SUPPORTED YET");
+            thenBlock = LLVMAppendBasicBlock(function, "then");;
+            nextBlock = LLVMAppendBasicBlock(function, "next");
 
-        // else
-        int numStatementSequence = ctx.statementSequence().size();
-        int numExpression = ctx.expression().size();
-        if (numStatementSequence != numExpression) {
-            LLVMPositionBuilderAtEnd(builder, elseBlock);
-            visitStatementSequence(ctx.statementSequence(numStatementSequence - 1));
+            // if
+            LLVMValueRef expCondRef = visitExpression(ctx.expression(i));
+            LLVMBuildCondBr(builder, expCondRef, thenBlock, nextBlock);
+
+            // then
+            LLVMPositionBuilderAtEnd(builder, thenBlock);
+            visitStatementSequence(ctx.statementSequence(i));
             LLVMBuildBr(builder, endBlock);
         }
 
+        // else
+        LLVMPositionBuilderAtEnd(builder, nextBlock);
+        int numStatementSequence = ctx.statementSequence().size();
+        int numExpression = ctx.expression().size();
+        if (numStatementSequence != numExpression) {
+            visitStatementSequence(ctx.statementSequence(numStatementSequence - 1));
+        }
+        LLVMBuildBr(builder, endBlock);
+
         LLVMPositionBuilderAtEnd(builder, endBlock);
+
+
+
+//        LLVMBasicBlockRef thenBlock = LLVMAppendBasicBlock(function, "then");
+//        LLVMBasicBlockRef elseBlock = LLVMAppendBasicBlock(function, "else");
+//        LLVMBasicBlockRef endBlock = LLVMAppendBasicBlock(function, "end");
+//
+//        // if
+//        LLVMValueRef expCondRef = visitExpression(ctx.expression(0));
+//        LLVMBuildCondBr(builder, expCondRef, thenBlock, elseBlock);
+//
+//        // then
+//        LLVMPositionBuilderAtEnd(builder, thenBlock);
+//        visitStatementSequence(ctx.statementSequence(0)); //todo return value
+//        LLVMBuildBr(builder, endBlock);
+//
+//        // else
+//        LLVMPositionBuilderAtEnd(builder, elseBlock);
+//        int numStatementSequence = ctx.statementSequence().size();
+//        int numExpression = ctx.expression().size();
+//        if (numStatementSequence != numExpression) {
+//            visitStatementSequence(ctx.statementSequence(numStatementSequence - 1));
+//        }
+//        LLVMBuildBr(builder, endBlock);
+//
+//        LLVMPositionBuilderAtEnd(builder, endBlock);
 
         return null;
     }

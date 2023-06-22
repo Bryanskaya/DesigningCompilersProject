@@ -1,0 +1,16 @@
+MODULE IfElseExample;
+VAR
+    x: INTEGER;
+
+BEGIN
+    x := 20;
+
+    IF x = 0 THEN
+        x := 1;
+    ELSIF x = 1 THEN
+        x := 2;
+    ELSIF x = 2 THEN
+        x := 3;
+    END;
+    RETURN x;
+END IfElseExample.
