@@ -272,11 +272,10 @@ public class OberonVisitor extends OberonBaseVisitor {
 //        }
 
         // else
-        Object statSeqElseRef;
-        int i = 2;
-        if (ctx.statementSequence().size() == 2) {
+        int numStatementSequence = ctx.statementSequence().size();
+        if (numStatementSequence % 2 == 1) {
             LLVMPositionBuilderAtEnd(builder, elseBlock);
-            visitStatementSequence(ctx.statementSequence(i - 1));
+            visitStatementSequence(ctx.statementSequence(numStatementSequence - 1));
             LLVMBuildBr(builder, endBlock);
         }
 
