@@ -1,6 +1,0 @@
-MODULE hello;
-VAR n,m:INTEGER;
-
-BEGIN
-    n := 10;
-END hello.

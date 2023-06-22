@@ -1,0 +1,4 @@
+app:
+  buildDir: "./build/"
+  module:
+    name: "module"

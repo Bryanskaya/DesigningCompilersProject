@@ -18,6 +18,15 @@ public class ShutdownListener implements ApplicationListener<ContextClosedEvent>
 
     @Override
     public void onApplicationEvent(ContextClosedEvent event) {
+        createExeFromLL();
+    }
+
+    public static int runCommand(String cmd) throws IOException, InterruptedException {
+        Process process = Runtime.getRuntime().exec(cmd);
+        return process.waitFor();
+    }
+
+    public void createExeFromLL() {
         int exitCode;
         String[] cmdArr = {
                 String.format("C:\\Program Files\\LLVM\\bin\\clang.exe -c -o " + appParams.buildDir +
@@ -43,11 +52,6 @@ public class ShutdownListener implements ApplicationListener<ContextClosedEvent>
                 log.error("ERROR: {}", e.getMessage());
             }
         }
-    }
-
-    public static int runCommand(String cmd) throws IOException, InterruptedException {
-        Process process = Runtime.getRuntime().exec(cmd);
-        return process.waitFor();
     }
 }
 

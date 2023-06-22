@@ -6,7 +6,7 @@ BEGIN
     n := 1 - 1024;
     m := 1024 - 1;
     k := 2 + 1 - 3;
-    l := l - k - 1;
+    l := l - k - 1 + n - m;
 
     RETURN l;
 END hello.

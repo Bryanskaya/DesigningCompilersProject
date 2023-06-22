@@ -1,11 +1,10 @@
 MODULE hello;
-VAR n, m, k, l:INTEGER;
+VAR n, m, l:INTEGER;
 
 BEGIN
     l := 10;
     n := 1 + 1024;
     m := l + l + n;
-    k := 1 + 2 + 3;
 
     RETURN m;
 END hello.

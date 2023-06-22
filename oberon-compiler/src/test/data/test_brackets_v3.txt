@@ -1,0 +1,13 @@
+MODULE hello;
+VAR
+    a, b, c, result, n:INTEGER;
+
+BEGIN
+    a := 10;
+    b := 3;
+    c := 5;
+
+    result := 80 DIV (2 * (10 - 6));
+
+    RETURN result;
+END hello.

@@ -1,0 +1,22 @@
+MODULE IfElseExample;
+VAR
+    x, y, res: INTEGER;
+    arr: ARRAY 3 OF INTEGER;
+
+BEGIN
+    x := 10;
+    arr[1] := -1;
+
+    IF x > 0 THEN
+        y := -1000000;
+        IF arr[1] # -1 THEN
+            res := 0;
+        ELSE
+            res := -1;
+        END;
+        y := 11111111;
+    ELSE
+        res := 1024;
+    END;
+    RETURN y;
+END IfElseExample.

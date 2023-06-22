@@ -1,0 +1,9 @@
+MODULE hello;
+VAR
+    m:INTEGER;
+
+BEGIN
+    m := 3 MOD 4;
+
+    RETURN m;
+END hello.

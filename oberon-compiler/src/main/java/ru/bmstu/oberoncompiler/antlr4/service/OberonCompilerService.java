@@ -36,6 +36,8 @@ public class OberonCompilerService {
     private OberonVisitor visitor;
 
     public void process(String filename) throws IOException, InterruptedException {
+        log.info("FILE: {}", filename);
+
         lexer = doLexicalAnalysis(filename);
         OberonParser parser = doSynAnalysis();
         Object context = parser.module();

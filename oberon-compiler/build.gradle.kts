@@ -22,6 +22,10 @@ dependencies {
 
     annotationProcessor("org.projectlombok:lombok")
     compileOnly("org.projectlombok:lombok")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude("junit", "junit")
+    }
 }
 
 tasks.withType<Test> {

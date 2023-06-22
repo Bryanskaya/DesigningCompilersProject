@@ -1,0 +1,13 @@
+MODULE hello;
+VAR
+    a, b, c, result, n:INTEGER;
+
+BEGIN
+    a := 10;
+    b := 3;
+    c := 5;
+
+    result := (a + b) * c;
+
+    RETURN result;
+END hello.

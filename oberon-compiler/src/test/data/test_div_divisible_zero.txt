@@ -1,0 +1,9 @@
+MODULE hello;
+VAR
+    n:INTEGER;
+
+BEGIN
+    n := 0 DIV 5;
+
+    RETURN n;
+END hello.
