@@ -63,13 +63,12 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         String nameStartModule = visitIdent(ctx.ident(0));
 
-        visitDeclarationSequence(ctx.declarationSequence()); //TODO return value
+        visitDeclarationSequence(ctx.declarationSequence());
 
         visitStatementSequence(ctx.statementSequence());
 
         LLVMValueRef returnValue = visitFactor(ctx.factor());
 
-//        LLVMValueRef result = LLVMConstNull(LLVMInt32Type());
         LLVMBuildRet(builder, returnValue);
 
         String nameEndModule = visitIdent(ctx.ident(1));
@@ -93,16 +92,16 @@ public class OberonVisitor extends OberonBaseVisitor {
      */
     public Object visitDeclarationSequence(OberonParser.DeclarationSequenceContext ctx) {
         if (ctx.constDeclaration().size() > 0)
-            throw new UnsupportedOperationException("CONSTDECLARATION NOT SUPPORTED YET"); //TODO
+            throw new UnsupportedOperationException("CONSTDECLARATION NOT SUPPORTED YET");
         if (ctx.typeDeclaration().size() > 0)
-            throw new UnsupportedOperationException("TYPEDECLARATION NOT SUPPORTED YET"); //TODO
+            throw new UnsupportedOperationException("TYPEDECLARATION NOT SUPPORTED YET");
         if (ctx.variableDeclaration().size() > 0) {
             for (OberonParser.VariableDeclarationContext context: ctx.variableDeclaration()) {
                 visitVariableDeclaration(context);
             }
         }
 
-        return null; //TODO
+        return null;
     }
 
     /**
@@ -111,14 +110,11 @@ public class OberonVisitor extends OberonBaseVisitor {
      * @return object
      */
     public Object visitVariableDeclaration(OberonParser.VariableDeclarationContext ctx) {
-        List<String> resIdentList = visitIdentList(ctx.identList()); //todo return value
+        List<String> resIdentList = visitIdentList(ctx.identList());
         LLVMTypeRef resType_ = visitType_(ctx.type_());
-        int typeKind = LLVMGetTypeKind(resType_);
 
         for (String ident : resIdentList) {
             LLVMValueRef value = LLVMAddGlobal(module, resType_, ident);
-//            LLVMValueRef initValue = getInitValue(typeKind, resType_);
-//            LLVMSetInitializer(value, initValue);
 
             LLVMSetInitializer(value, LLVMConstNull(resType_));
 
@@ -128,37 +124,17 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         return null;
     }
-    private LLVMValueRef getInitValue(int typeKind, LLVMTypeRef resType_) {
-        LLVMValueRef initValue;
-        switch (typeKind) {
-            case LLVMIntegerTypeKind -> initValue = LLVMConstInt(resType_, 0, 1);
-            case LLVMDoubleTypeKind -> initValue = LLVMConstReal(resType_, 0);
-            case LLVMArrayTypeKind -> {
-                LLVMTypeRef typeKindElemRef = LLVMGetElementType(resType_);
-                int typeKindElem = LLVMGetTypeKind(typeKindElemRef);
-                initValue = getInitValue(typeKindElem, typeKindElemRef);
-            }
-            default -> throw new IllegalArgumentException("Unsupported variable type: " + resType_);
-        }
-
-        return initValue;
-    }
 
     public List<String> visitIdentList(OberonParser.IdentListContext ctx) {
         List<String> resIdentdefLst = new ArrayList<>();
         for (OberonParser.IdentdefContext context : ctx.identdef())
             resIdentdefLst.add(visitIdentdef(context));
 
-        return resIdentdefLst; //todo
+        return resIdentdefLst;
     }
 
-    /**
-     * type_ : qualident | arrayType | pointerType | procedureType ;
-     * @param ctx type context
-     * @return Object
-     */
-    public LLVMTypeRef visitType_(OberonParser.Type_Context ctx) { //todo type
-        LLVMTypeRef res = null;
+    public LLVMTypeRef visitType_(OberonParser.Type_Context ctx) {
+        LLVMTypeRef res;
         if (ctx.qualident() != null) {
             String typeStr = visitQualident(ctx.qualident());
             res = switch (typeStr) {
@@ -170,9 +146,9 @@ public class OberonVisitor extends OberonBaseVisitor {
         else if (ctx.arrayType() != null)
             res = visitArrayType(ctx.arrayType());
         else
-            throw new UnsupportedOperationException("type_: MENTIONED TYPE NOT SUPPORTED YET"); //TODO
+            throw new UnsupportedOperationException("type_: MENTIONED TYPE NOT SUPPORTED YET");
 
-        return res; //todo
+        return res;
     }
 
     public LLVMTypeRef visitArrayType(OberonParser.ArrayTypeContext ctx) {
@@ -190,13 +166,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         return visitExpression(ctx.expression());
     }
 
-    /**
-     * identdef : ident '*'? ;
-     * @param ctx the parse tree
-     * @return
-     */
     public String visitIdentdef(OberonParser.IdentdefContext ctx) {
-        return visitIdent(ctx.ident()); //todo не учла что может быть указатель -- правило *
+        return visitIdent(ctx.ident());
     }
 
     public LLVMValueRef visitStatementSequence(OberonParser.StatementSequenceContext ctx) {
@@ -208,26 +179,25 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public Object visitStatement(OberonParser.StatementContext ctx) {
-        Object res = null;
         if (ctx.assignment() != null)
-            res = visitAssignment(ctx.assignment());
+            visitAssignment(ctx.assignment());
         else if (ctx.ifStatement() != null)
-            res = visitIfStatement(ctx.ifStatement());
+            visitIfStatement(ctx.ifStatement());
         else if (ctx.whileStatement() != null)
-            res = visitWhileStatement(ctx.whileStatement());
+            visitWhileStatement(ctx.whileStatement());
         else if (ctx.forStatement() != null)
-            throw new UnsupportedOperationException("FORSTATEMENT NOT SUPPORTED YET"); //TODO
+            throw new UnsupportedOperationException("FORSTATEMENT NOT SUPPORTED YET");
 
-        return null; //TODO
+        return null;
     }
 
     public Object visitAssignment(OberonParser.AssignmentContext ctx) {
         LLVMValueRef varRef = visitDesignator(ctx.designator());
-        LLVMValueRef valueExpressionRef = visitExpression(ctx.expression()); //todo return value
+        LLVMValueRef valueExpressionRef = visitExpression(ctx.expression());
 
         LLVMBuildStore(builder, valueExpressionRef, varRef);
 
-        return null; //TODO
+        return null;
     }
 
     public Object visitIfStatement(OberonParser.IfStatementContext ctx) {
@@ -263,32 +233,6 @@ public class OberonVisitor extends OberonBaseVisitor {
         LLVMBuildBr(builder, endBlock);
 
         LLVMPositionBuilderAtEnd(builder, endBlock);
-
-
-
-//        LLVMBasicBlockRef thenBlock = LLVMAppendBasicBlock(function, "then");
-//        LLVMBasicBlockRef elseBlock = LLVMAppendBasicBlock(function, "else");
-//        LLVMBasicBlockRef endBlock = LLVMAppendBasicBlock(function, "end");
-//
-//        // if
-//        LLVMValueRef expCondRef = visitExpression(ctx.expression(0));
-//        LLVMBuildCondBr(builder, expCondRef, thenBlock, elseBlock);
-//
-//        // then
-//        LLVMPositionBuilderAtEnd(builder, thenBlock);
-//        visitStatementSequence(ctx.statementSequence(0)); //todo return value
-//        LLVMBuildBr(builder, endBlock);
-//
-//        // else
-//        LLVMPositionBuilderAtEnd(builder, elseBlock);
-//        int numStatementSequence = ctx.statementSequence().size();
-//        int numExpression = ctx.expression().size();
-//        if (numStatementSequence != numExpression) {
-//            visitStatementSequence(ctx.statementSequence(numStatementSequence - 1));
-//        }
-//        LLVMBuildBr(builder, endBlock);
-//
-//        LLVMPositionBuilderAtEnd(builder, endBlock);
 
         return null;
     }
@@ -364,12 +308,12 @@ public class OberonVisitor extends OberonBaseVisitor {
     }
 
     public LLVMValueRef visitExpList(OberonParser.ExpListContext ctx) {
-        LLVMValueRef expLeft = visitExpression(ctx.expression(0)); //todo return value
+        LLVMValueRef expLeft = visitExpression(ctx.expression(0));
         for (int i = 1; i < ctx.expression().size(); i++) {
             Object expRight = visitExpression(ctx.expression(i)); //todo return value
         }
 
-        return expLeft; //todo
+        return expLeft;
     }
 
     public LLVMValueRef visitExpression(OberonParser.ExpressionContext ctx) {
@@ -514,7 +458,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         if (ctx.number() != null)
             res = visitNumber(ctx.number());
         else if (ctx.set_() != null)
-            throw new UnsupportedOperationException("SET_ NOT SUPPORTED YET"); //todo
+            throw new UnsupportedOperationException("SET_ NOT SUPPORTED YET");
         else if (ctx.designator() != null) {
             LLVMValueRef varRef = visitDesignator(ctx.designator());
             LLVMTypeRef loadType = (varRef instanceof ValueRef) ?
@@ -527,10 +471,10 @@ public class OberonVisitor extends OberonBaseVisitor {
         else if (ctx.factor() != null)
             res = visitFactor(ctx.factor());
         else
-            throw new UnsupportedOperationException("STRING, TRUE, FALSE, NIL IN FACTOR NOT SUPPORTED YET"); //TODO
-//            return ctx.getText(); //todo string, true, false, nil
+            throw new UnsupportedOperationException("STRING, TRUE, FALSE, NIL IN FACTOR NOT SUPPORTED YET");
+//            return ctx.getText();
 
-        return res; //todo
+        return res;
     }
 
     public LLVMValueRef visitNumber(OberonParser.NumberContext ctx) {
