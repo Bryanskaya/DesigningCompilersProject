@@ -214,7 +214,7 @@ public class OberonVisitor extends OberonBaseVisitor {
         else if (ctx.ifStatement() != null)
             res = visitIfStatement(ctx.ifStatement());
         else if (ctx.whileStatement() != null)
-            throw new UnsupportedOperationException("WHILESTATEMENT NOT SUPPORTED YET"); //TODO
+            res = visitWhileStatement(ctx.whileStatement());
         else if (ctx.forStatement() != null)
             throw new UnsupportedOperationException("FORSTATEMENT NOT SUPPORTED YET"); //TODO
 
@@ -247,14 +247,6 @@ public class OberonVisitor extends OberonBaseVisitor {
         if (ctx.expression().size() > 1)
             throw new UnsupportedOperationException("SEVERAL expressions NOT SUPPORTED YET");
 
-//        LLVMValueRef expInnerCondRef;
-//        Object statSeqInnerIfRef;
-//        int i = 1;
-//        for (; i < ctx.expression().size(); i++) {
-//            expInnerCondRef = visitExpression(ctx.expression(i));
-//            statSeqInnerIfRef = visitStatementSequence(ctx.statementSequence(i)); //todo return value
-//        }
-
         // else
         int numStatementSequence = ctx.statementSequence().size();
         int numExpression = ctx.expression().size();
@@ -263,6 +255,31 @@ public class OberonVisitor extends OberonBaseVisitor {
             visitStatementSequence(ctx.statementSequence(numStatementSequence - 1));
             LLVMBuildBr(builder, endBlock);
         }
+
+        LLVMPositionBuilderAtEnd(builder, endBlock);
+
+        return null;
+    }
+
+    public Object visitWhileStatement(OberonParser.WhileStatementContext ctx) {
+        LLVMBasicBlockRef whileBlock = LLVMAppendBasicBlock(function, "while");
+        LLVMBasicBlockRef doBlock = LLVMAppendBasicBlock(function, "do");
+        LLVMBasicBlockRef endBlock = LLVMAppendBasicBlock(function, "end");
+
+        LLVMBuildBr(builder, whileBlock);
+
+        // while
+        LLVMPositionBuilderAtEnd(builder, whileBlock);
+        LLVMValueRef expCondRef = visitExpression(ctx.expression(0));
+        LLVMBuildCondBr(builder, expCondRef, doBlock, endBlock);
+
+        // do
+        LLVMPositionBuilderAtEnd(builder, doBlock);
+        visitStatementSequence(ctx.statementSequence(0));
+        LLVMBuildBr(builder, whileBlock);
+
+        if (ctx.expression().size() > 1)
+            throw new UnsupportedOperationException("SEVERAL expressions NOT SUPPORTED YET");
 
         LLVMPositionBuilderAtEnd(builder, endBlock);
 
@@ -281,9 +298,14 @@ public class OberonVisitor extends OberonBaseVisitor {
             valueSelector = visitSelector(selector);
 
             if (valueSelector != null) {
+                if (valueSelector instanceof ValueRef) {
+                    LLVMTypeRef loadType = ((ValueRef) valueSelector).elemType;
+                    valueSelector = LLVMBuildLoad2(builder, loadType, valueSelector, "value");
+                }
+
                 LLVMValueRef[] indexArr = {
                         LLVMConstInt(LLVMInt32Type(), 0, 0),
-                        LLVMConstInt(LLVMInt32Type(), LLVMConstIntGetSExtValue(valueSelector), 0)
+                        valueSelector
                 };
 
                 varRef = LLVMBuildGEP2(builder, varTypeMap.get(resQualident), varRef,

@@ -45,7 +45,10 @@ public class OberonCompilerApplicationTests {
                 Arguments.of("./src/test/data/test_brackets_v2.txt", "./src/test/data/test_brackets_v2_expected.txt"),
                 Arguments.of("./src/test/data/test_brackets_v3.txt", "./src/test/data/test_brackets_v3_expected.txt"),
                 Arguments.of("./src/test/data/test_if_else.txt", "./src/test/data/test_if_else_expected.txt"),
-                Arguments.of("./src/test/data/test_if_else_inner.txt", "./src/test/data/test_if_else_inner_expected.txt")
+                Arguments.of("./src/test/data/test_if_else_inner.txt", "./src/test/data/test_if_else_inner_expected.txt"),
+                Arguments.of("./src/test/data/test_while.txt", "./src/test/data/test_while_expected.txt"),
+                Arguments.of("./src/test/data/test_fib.txt", "./src/test/data/test_fib_expected.txt"),
+                Arguments.of("./src/test/data/test_fib_array.txt", "./src/test/data/test_fib_array_expected.txt")
                 );
     }
 

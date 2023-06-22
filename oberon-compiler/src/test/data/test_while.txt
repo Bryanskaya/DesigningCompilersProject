@@ -1,0 +1,12 @@
+MODULE WhileExample;
+VAR
+  n: INTEGER;
+
+BEGIN
+  n := 0;
+
+  WHILE n < 5 DO
+    n := n + 1;
+  END;
+  RETURN n;
+END WhileExample.
