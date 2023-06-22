@@ -41,12 +41,6 @@ public interface OberonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitReal(OberonParser.RealContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link OberonParser#scaleFactor}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitScaleFactor(OberonParser.ScaleFactorContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link OberonParser#number}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -89,47 +83,11 @@ public interface OberonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLength(OberonParser.LengthContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link OberonParser#recordType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRecordType(OberonParser.RecordTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#baseType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBaseType(OberonParser.BaseTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#fieldListSequence}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFieldListSequence(OberonParser.FieldListSequenceContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#fieldList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFieldList(OberonParser.FieldListContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link OberonParser#identList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitIdentList(OberonParser.IdentListContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#pointerType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPointerType(OberonParser.PointerTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#procedureType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureType(OberonParser.ProcedureTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link OberonParser#variableDeclaration}.
 	 * @param ctx the parse tree
@@ -227,12 +185,6 @@ public interface OberonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAssignment(OberonParser.AssignmentContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link OberonParser#procedureCall}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureCall(OberonParser.ProcedureCallContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link OberonParser#statementSequence}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -245,71 +197,17 @@ public interface OberonVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIfStatement(OberonParser.IfStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link OberonParser#caseStatement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCaseStatement(OberonParser.CaseStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#case_}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCase_(OberonParser.Case_Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#caseLabelList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitCaseLabelList(OberonParser.CaseLabelListContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#labelRange}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabelRange(OberonParser.LabelRangeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#label}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabel(OberonParser.LabelContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link OberonParser#whileStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitWhileStatement(OberonParser.WhileStatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link OberonParser#repeatStatement}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRepeatStatement(OberonParser.RepeatStatementContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link OberonParser#forStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitForStatement(OberonParser.ForStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#procedureDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureDeclaration(OberonParser.ProcedureDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#procedureHeading}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureHeading(OberonParser.ProcedureHeadingContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#procedureBody}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureBody(OberonParser.ProcedureBodyContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link OberonParser#declarationSequence}.
 	 * @param ctx the parse tree
@@ -340,16 +238,4 @@ public interface OberonVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitModule(OberonParser.ModuleContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#importList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitImportList(OberonParser.ImportListContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link OberonParser#import_}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitImport_(OberonParser.Import_Context ctx);
 }

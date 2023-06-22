@@ -58,16 +58,6 @@ public interface OberonListener extends ParseTreeListener {
 	 */
 	void exitReal(OberonParser.RealContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link OberonParser#scaleFactor}.
-	 * @param ctx the parse tree
-	 */
-	void enterScaleFactor(OberonParser.ScaleFactorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#scaleFactor}.
-	 * @param ctx the parse tree
-	 */
-	void exitScaleFactor(OberonParser.ScaleFactorContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link OberonParser#number}.
 	 * @param ctx the parse tree
 	 */
@@ -138,46 +128,6 @@ public interface OberonListener extends ParseTreeListener {
 	 */
 	void exitLength(OberonParser.LengthContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link OberonParser#recordType}.
-	 * @param ctx the parse tree
-	 */
-	void enterRecordType(OberonParser.RecordTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#recordType}.
-	 * @param ctx the parse tree
-	 */
-	void exitRecordType(OberonParser.RecordTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#baseType}.
-	 * @param ctx the parse tree
-	 */
-	void enterBaseType(OberonParser.BaseTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#baseType}.
-	 * @param ctx the parse tree
-	 */
-	void exitBaseType(OberonParser.BaseTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#fieldListSequence}.
-	 * @param ctx the parse tree
-	 */
-	void enterFieldListSequence(OberonParser.FieldListSequenceContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#fieldListSequence}.
-	 * @param ctx the parse tree
-	 */
-	void exitFieldListSequence(OberonParser.FieldListSequenceContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#fieldList}.
-	 * @param ctx the parse tree
-	 */
-	void enterFieldList(OberonParser.FieldListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#fieldList}.
-	 * @param ctx the parse tree
-	 */
-	void exitFieldList(OberonParser.FieldListContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link OberonParser#identList}.
 	 * @param ctx the parse tree
 	 */
@@ -187,26 +137,6 @@ public interface OberonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIdentList(OberonParser.IdentListContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#pointerType}.
-	 * @param ctx the parse tree
-	 */
-	void enterPointerType(OberonParser.PointerTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#pointerType}.
-	 * @param ctx the parse tree
-	 */
-	void exitPointerType(OberonParser.PointerTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#procedureType}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureType(OberonParser.ProcedureTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#procedureType}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureType(OberonParser.ProcedureTypeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link OberonParser#variableDeclaration}.
 	 * @param ctx the parse tree
@@ -368,16 +298,6 @@ public interface OberonListener extends ParseTreeListener {
 	 */
 	void exitAssignment(OberonParser.AssignmentContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link OberonParser#procedureCall}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureCall(OberonParser.ProcedureCallContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#procedureCall}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureCall(OberonParser.ProcedureCallContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link OberonParser#statementSequence}.
 	 * @param ctx the parse tree
 	 */
@@ -398,56 +318,6 @@ public interface OberonListener extends ParseTreeListener {
 	 */
 	void exitIfStatement(OberonParser.IfStatementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link OberonParser#caseStatement}.
-	 * @param ctx the parse tree
-	 */
-	void enterCaseStatement(OberonParser.CaseStatementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#caseStatement}.
-	 * @param ctx the parse tree
-	 */
-	void exitCaseStatement(OberonParser.CaseStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#case_}.
-	 * @param ctx the parse tree
-	 */
-	void enterCase_(OberonParser.Case_Context ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#case_}.
-	 * @param ctx the parse tree
-	 */
-	void exitCase_(OberonParser.Case_Context ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#caseLabelList}.
-	 * @param ctx the parse tree
-	 */
-	void enterCaseLabelList(OberonParser.CaseLabelListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#caseLabelList}.
-	 * @param ctx the parse tree
-	 */
-	void exitCaseLabelList(OberonParser.CaseLabelListContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#labelRange}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabelRange(OberonParser.LabelRangeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#labelRange}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabelRange(OberonParser.LabelRangeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabel(OberonParser.LabelContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabel(OberonParser.LabelContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link OberonParser#whileStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -458,16 +328,6 @@ public interface OberonListener extends ParseTreeListener {
 	 */
 	void exitWhileStatement(OberonParser.WhileStatementContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link OberonParser#repeatStatement}.
-	 * @param ctx the parse tree
-	 */
-	void enterRepeatStatement(OberonParser.RepeatStatementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#repeatStatement}.
-	 * @param ctx the parse tree
-	 */
-	void exitRepeatStatement(OberonParser.RepeatStatementContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link OberonParser#forStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -477,36 +337,6 @@ public interface OberonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitForStatement(OberonParser.ForStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#procedureDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureDeclaration(OberonParser.ProcedureDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#procedureDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureDeclaration(OberonParser.ProcedureDeclarationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#procedureHeading}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureHeading(OberonParser.ProcedureHeadingContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#procedureHeading}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureHeading(OberonParser.ProcedureHeadingContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#procedureBody}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureBody(OberonParser.ProcedureBodyContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#procedureBody}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureBody(OberonParser.ProcedureBodyContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link OberonParser#declarationSequence}.
 	 * @param ctx the parse tree
@@ -557,24 +387,4 @@ public interface OberonListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitModule(OberonParser.ModuleContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#importList}.
-	 * @param ctx the parse tree
-	 */
-	void enterImportList(OberonParser.ImportListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#importList}.
-	 * @param ctx the parse tree
-	 */
-	void exitImportList(OberonParser.ImportListContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link OberonParser#import_}.
-	 * @param ctx the parse tree
-	 */
-	void enterImport_(OberonParser.Import_Context ctx);
-	/**
-	 * Exit a parse tree produced by {@link OberonParser#import_}.
-	 * @param ctx the parse tree
-	 */
-	void exitImport_(OberonParser.Import_Context ctx);
 }
