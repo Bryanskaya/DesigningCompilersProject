@@ -63,9 +63,6 @@ public class OberonVisitor extends OberonBaseVisitor {
 
         String nameStartModule = visitIdent(ctx.ident(0));
 
-        if (ctx.importList() != null)
-            visitImportList(ctx.importList());
-
         visitDeclarationSequence(ctx.declarationSequence()); //TODO return value
 
         visitStatementSequence(ctx.statementSequence());
@@ -87,11 +84,6 @@ public class OberonVisitor extends OberonBaseVisitor {
         return ctx.getText();
     }
 
-    public Object visitImportList(OberonParser.ImportListContext ctx) {
-        //todo
-        return null; //TODO
-    }
-
     /**
      * declarationSequence
      *    : (CONST (constDeclaration ';')*)? (TYPE (typeDeclaration ';')*)? (VAR (variableDeclaration ';')*)? (procedureDeclaration ';')*
@@ -109,8 +101,6 @@ public class OberonVisitor extends OberonBaseVisitor {
                 visitVariableDeclaration(context);
             }
         }
-        if (ctx.procedureDeclaration().size() > 0)
-            throw new UnsupportedOperationException("PROCEDUREDECLARATION NOT SUPPORTED YET"); //TODO
 
         return null; //TODO
     }
@@ -179,10 +169,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         }
         else if (ctx.arrayType() != null)
             res = visitArrayType(ctx.arrayType());
-        else if (ctx.pointerType() != null)
-            throw new UnsupportedOperationException("POINTERTYPE NOT SUPPORTED YET"); //TODO
-        else if (ctx.procedureType() != null)
-            throw new UnsupportedOperationException("PROCEDURETYPE NOT SUPPORTED YET"); //TODO
+        else
+            throw new UnsupportedOperationException("type_: MENTIONED TYPE NOT SUPPORTED YET"); //TODO
 
         return res; //todo
     }
@@ -223,12 +211,8 @@ public class OberonVisitor extends OberonBaseVisitor {
         Object res = null;
         if (ctx.assignment() != null)
             res = visitAssignment(ctx.assignment());
-        else if (ctx.procedureCall() != null)
-            throw new UnsupportedOperationException("PROCEDURECALL NOT SUPPORTED YET"); //TODO
         else if (ctx.ifStatement() != null)
             res = visitIfStatement(ctx.ifStatement());
-        else if (ctx.caseStatement() != null)
-            throw new UnsupportedOperationException("CASESTATEMENT NOT SUPPORTED YET"); //TODO
         else if (ctx.whileStatement() != null)
             throw new UnsupportedOperationException("WHILESTATEMENT NOT SUPPORTED YET"); //TODO
         else if (ctx.forStatement() != null)

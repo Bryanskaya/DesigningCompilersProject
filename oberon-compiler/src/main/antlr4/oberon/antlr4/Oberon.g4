@@ -42,8 +42,6 @@ typeDeclaration
 type_
    : qualident
    | arrayType
-   | pointerType
-   | procedureType
    ;
 
 arrayType
@@ -56,14 +54,6 @@ length
 
 identList
    : identdef (',' identdef)*
-   ;
-
-pointerType
-   : POINTER TO type_
-   ;
-
-procedureType
-   : PROCEDURE formalParameters?
    ;
 
 variableDeclaration
@@ -142,15 +132,11 @@ actualParameters
    ;
 
 statement
-   : (assignment | procedureCall | ifStatement | caseStatement | whileStatement | forStatement)?
+   : (assignment | ifStatement | whileStatement | forStatement)?
    ;
 
 assignment
    : designator ':=' expression
-   ;
-
-procedureCall
-   : designator actualParameters?
    ;
 
 statementSequence
@@ -161,28 +147,6 @@ ifStatement
    : IF expression THEN statementSequence (ELSIF expression THEN statementSequence)* (ELSE statementSequence)? END
    ;
 
-caseStatement
-   : CASE expression OF case_ ('|' case_)* END
-   ;
-
-case_
-   : (caseLabelList ':' statementSequence)?
-   ;
-
-caseLabelList
-   : labelRange (',' labelRange)*
-   ;
-
-labelRange
-   : label ('..' label)?
-   ;
-
-label
-   : integer
-   | STRING
-   | qualident
-   ;
-
 whileStatement
    : WHILE expression DO statementSequence (ELSIF expression DO statementSequence)* END
    ;
@@ -191,20 +155,8 @@ forStatement
    : FOR ident ':=' expression TO expression (BY constExpression)? DO statementSequence END
    ;
 
-procedureDeclaration
-   : procedureHeading ';' procedureBody ident
-   ;
-
-procedureHeading
-   : PROCEDURE identdef formalParameters?
-   ;
-
-procedureBody
-   : declarationSequence (BEGIN statementSequence)? (RETURN expression)? END
-   ;
-
 declarationSequence
-   : (CONST (constDeclaration ';')*)? (TYPE (typeDeclaration ';')*)? (VAR (variableDeclaration ';')*)? (procedureDeclaration ';')*
+   : (CONST (constDeclaration ';')*)? (TYPE (typeDeclaration ';')*)? (VAR (variableDeclaration ';')*)?
    ;
 
 formalParameters
@@ -220,15 +172,7 @@ formalType
    ;
 
 module
-   : MODULE ident ';' importList? declarationSequence (BEGIN statementSequence)? RETURN factor ';' END ident '.' EOF
-   ;
-
-importList
-   : IMPORT import_ (',' import_)* ';'
-   ;
-
-import_
-   : ident (':=' ident)?
+   : MODULE ident ';' declarationSequence (BEGIN statementSequence)? RETURN factor ';' END ident '.' EOF
    ;
 
 ARRAY
@@ -243,16 +187,8 @@ END
    : 'END'
    ;
 
-POINTER
-   : 'POINTER'
-   ;
-
 TO
    : 'TO'
-   ;
-
-PROCEDURE
-   : 'PROCEDURE'
    ;
 
 OR
@@ -337,10 +273,6 @@ VAR
 
 MODULE
    : 'MODULE'
-   ;
-
-IMPORT
-   : 'IMPORT'
    ;
 
 STRING
