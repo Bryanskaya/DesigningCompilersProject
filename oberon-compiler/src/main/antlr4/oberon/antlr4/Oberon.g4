@@ -159,18 +159,6 @@ declarationSequence
    : (CONST (constDeclaration ';')*)? (TYPE (typeDeclaration ';')*)? (VAR (variableDeclaration ';')*)?
    ;
 
-formalParameters
-   : '(' (fPSection (';' fPSection)*)? ')' (':' qualident)?
-   ;
-
-fPSection
-   : VAR? ident (',' ident)* ':' formalType
-   ;
-
-formalType
-   : (ARRAY OF)* qualident
-   ;
-
 module
    : MODULE ident ';' declarationSequence (BEGIN statementSequence)? RETURN factor ';' END ident '.' EOF
    ;
