@@ -8,15 +8,15 @@ BEGIN
     arr[1] := -1;
 
     IF x > 0 THEN
-        y := -1000000;
-        IF arr[1] # -1 THEN
-            res := 0;
+        arr[1] := arr[1] + 1;
+        IF x # 1 THEN
+            arr[1] := arr[1] + 2;
         ELSE
-            res := -1;
+            arr[1] := arr[1] + 3;
         END;
-        y := 11111111;
+        arr[1] := arr[1] + 4;
     ELSE
-        res := 1024;
+        arr[1] := arr[1] - 1;
     END;
-    RETURN y;
+    RETURN arr[1];
 END IfElseExample.
