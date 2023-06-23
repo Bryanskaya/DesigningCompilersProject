@@ -74,25 +74,26 @@
 \definecolor{plain}{rgb}{0.2,0.2,0.2}
 \definecolor{string}{rgb}{0.91,0.45,0.32}
 \hypersetup{citecolor=blue}
-\hypersetup{citecolor=black}
 
 \usepackage{listings}
-\lstset{
-	basicstyle=\footnotesize\ttfamily,
-	language=C, % Или другой ваш язык -- см. документацию пакета
+\lstdefinestyle{mystyle}{
+	basicstyle=\ttfamily\footnotesize,
 	commentstyle=\color{comment},
-	numbers=left,
-	numberstyle=\tiny\color{plain},
-	numbersep=5pt,
-	tabsize=4,
-	extendedchars=\true,
-	breaklines=true,
 	keywordstyle=\color{blue},
-	frame=b,
 	stringstyle=\ttfamily\color{string}\ttfamily,
-	showspaces=false,
-	showtabs=false,
-	frame=single,              % рисовать рамку вокруг кода
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,    
+	numberstyle=\tiny,                
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	extendedchars=true,
+	showtabs=false,     
+	frame=single,             
+	tabsize=4,
 	xleftmargin=17pt,
 	framexleftmargin=17pt,
 	framexrightmargin=5pt,
@@ -104,6 +105,8 @@
 	escapeinside={\%*}{*)},   % если нужно добавить комментарии в коде
 	belowskip=25pt
 }
+
+\lstset{style=mystyle}
 
 
 
@@ -131,3 +134,5 @@
 
 \usepackage{chngcntr}
 \counterwithin{figure}{section}
+
+\usepackage{algpseudocode}

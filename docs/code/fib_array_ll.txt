@@ -1,0 +1,46 @@
+; ModuleID = 'module'
+source_filename = "module"
+
+@n = common global i32 0
+@i = common global i32 0
+@arr = common global [100 x i32] zeroinitializer
+
+define i32 @main() {
+main_entry:
+  store i32 5, ptr @n, align 4
+  store i32 2, ptr @i, align 4
+  store i32 0, ptr @arr, align 4
+  store i32 1, ptr getelementptr inbounds ([100 x i32], ptr @arr, i32 0, i32 1), align 4
+  br label %while
+
+while:                                            ; preds = %do, %main_entry
+  %value = load i32, ptr @i, align 4
+  %value1 = load i32, ptr @n, align 4
+  %cmp_smaller = icmp slt i32 %value, %value1
+  br i1 %cmp_smaller, label %do, label %end
+
+do:                                               ; preds = %while
+  %value2 = load i32, ptr @i, align 4
+  %arr_element_ptr = getelementptr [100 x i32], ptr @arr, i32 0, i32 %value2
+  %value3 = load i32, ptr @i, align 4
+  %math_operation_int = sub i32 %value3, 1
+  %arr_element_ptr4 = getelementptr [100 x i32], ptr @arr, i32 0, i32 %math_operation_int
+  %value5 = load i32, ptr %arr_element_ptr4, align 4
+  %value6 = load i32, ptr @i, align 4
+  %math_operation_int7 = sub i32 %value6, 2
+  %arr_element_ptr8 = getelementptr [100 x i32], ptr @arr, i32 0, i32 %math_operation_int7
+  %value9 = load i32, ptr %arr_element_ptr8, align 4
+  %math_operation_int10 = add i32 %value5, %value9
+  store i32 %math_operation_int10, ptr %arr_element_ptr, align 4
+  %value11 = load i32, ptr @i, align 4
+  %math_operation_int12 = add i32 %value11, 1
+  store i32 %math_operation_int12, ptr @i, align 4
+  br label %while
+
+end:                                              ; preds = %while
+  %value13 = load i32, ptr @n, align 4
+  %math_operation_int14 = sub i32 %value13, 1
+  %arr_element_ptr15 = getelementptr [100 x i32], ptr @arr, i32 0, i32 %math_operation_int14
+  %value16 = load i32, ptr %arr_element_ptr15, align 4
+  ret i32 %value16
+}

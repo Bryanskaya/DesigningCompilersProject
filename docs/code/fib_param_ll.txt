@@ -1,0 +1,41 @@
+; ModuleID = 'module'
+source_filename = "module"
+
+@n = common global i32 0
+@x1 = common global i32 0
+@x2 = common global i32 0
+@tmp = common global i32 0
+@i = common global i32 0
+
+define i32 @main() {
+main_entry:
+  store i32 5, ptr @n, align 4
+  store i32 1, ptr @i, align 4
+  store i32 0, ptr @x1, align 4
+  store i32 1, ptr @x2, align 4
+  br label %while
+
+while:                                            ; preds = %do, %main_entry
+  %value = load i32, ptr @i, align 4
+  %value1 = load i32, ptr @n, align 4
+  %cmp_smaller = icmp slt i32 %value, %value1
+  br i1 %cmp_smaller, label %do, label %end
+
+do:                                               ; preds = %while
+  %value2 = load i32, ptr @x1, align 4
+  %value3 = load i32, ptr @x2, align 4
+  %math_operation_int = add i32 %value2, %value3
+  store i32 %math_operation_int, ptr @tmp, align 4
+  %value4 = load i32, ptr @x2, align 4
+  store i32 %value4, ptr @x1, align 4
+  %value5 = load i32, ptr @tmp, align 4
+  store i32 %value5, ptr @x2, align 4
+  %value6 = load i32, ptr @i, align 4
+  %math_operation_int7 = add i32 %value6, 1
+  store i32 %math_operation_int7, ptr @i, align 4
+  br label %while
+
+end:                                              ; preds = %while
+  %value8 = load i32, ptr @x1, align 4
+  ret i32 %value8
+}

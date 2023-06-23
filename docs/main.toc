@@ -2,23 +2,23 @@
 \contentsline {section}{ВВЕДЕНИЕ}{4}{Doc-Start}%
 \contentsline {section}{\numberline {1}Аналитическая часть}{5}{section.1}%
 \contentsline {subsection}{\numberline {1.1}Составляющие компилятора}{5}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Лексический анализатор}{6}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}Синтаксический анализатор}{6}{subsection.1.3}%
-\contentsline {subsection}{\numberline {1.4}Семантический анализатор}{7}{subsection.1.4}%
-\contentsline {subsection}{\numberline {1.5}Генерация кода}{8}{subsection.1.5}%
-\contentsline {section}{\numberline {2}Конструкторская часть}{9}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Формат входных данных}{9}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Формат выходных данных}{9}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}IDEF0}{9}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Алгоритм предобработки данных}{10}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Алгоритм создания онтологии на основе синтаксических графов}{10}{subsubsection.2.3.2}%
-\contentsline {subsubsection}{\numberline {2.3.3}Алгоритм построения сети}{10}{subsubsection.2.3.3}%
-\contentsline {subsubsection}{\numberline {2.3.4}Алгоритм поиска косинусного сходства}{12}{subsubsection.2.3.4}%
-\contentsline {subsubsection}{\numberline {2.3.5}Алгоритм поиска по сети}{12}{subsubsection.2.3.5}%
-\contentsline {subsection}{\numberline {2.4}ER-диаграмма}{13}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Use-case диаграмма}{14}{subsection.2.5}%
-\contentsline {section}{\numberline {3}Технологическая часть}{15}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Выбор средств программной реализации}{15}{subsection.3.1}%
-\contentsline {section}{ЗАКЛЮЧЕНИЕ}{16}{subsection.3.1}%
-\contentsline {section}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}{18}{subsection.3.1}%
-\contentsline {section}{ПРИЛОЖЕНИЕ A}{23}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {1.1.1}Лексический анализатор}{6}{subsubsection.1.1.1}%
+\contentsline {subsubsection}{\numberline {1.1.2}Синтаксический анализатор}{6}{subsubsection.1.1.2}%
+\contentsline {subsubsection}{\numberline {1.1.3}Семантический анализатор}{7}{subsubsection.1.1.3}%
+\contentsline {subsubsection}{\numberline {1.1.4}Генерация кода}{8}{subsubsection.1.1.4}%
+\contentsline {subsection}{\numberline {1.2}Методы реализации лексического и синтаксического анализаторов}{8}{subsection.1.2}%
+\contentsline {subsubsection}{\numberline {1.2.1}Генераторы лексического анализатора}{8}{subsubsection.1.2.1}%
+\contentsline {subsubsection}{\numberline {1.2.2}Генераторы синтаксического анализатора}{9}{subsubsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.3}LLVM}{10}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Конструкторская часть}{12}{section.2}%
+\contentsline {subsection}{\numberline {2.1}IDEF0}{12}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Язык Oberon}{12}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Лексический и синтаксический анализаторы}{13}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Семантический анализ}{13}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Технологическая часть}{14}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Выбор средств программной реализации}{14}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Сгенерированные классы анализаторов}{14}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Пример работы программы}{15}{subsection.3.3}%
+\contentsline {section}{ЗАКЛЮЧЕНИЕ}{19}{lstnumber.4.46}%
+\contentsline {section}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}{20}{lstnumber.4.46}%
+\contentsline {section}{ПРИЛОЖЕНИЕ A}{21}{lstnumber.4.46}%
