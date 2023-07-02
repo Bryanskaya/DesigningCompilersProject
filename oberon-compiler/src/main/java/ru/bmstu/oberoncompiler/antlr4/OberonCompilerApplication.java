@@ -40,9 +40,9 @@ public class OberonCompilerApplication {
 //        String filename = "./src/test/data/test_elseif.txt";
 //        String filename = "./src/test/data/test_while.txt";
 //        String filename = "./src/test/data/test_fib.txt";
-//        String filename = "./src/test/data/test_fib_array.txt";
+        String filename = "./src/test/data/test_fib_array.txt";
 //        String filename = "./src/test/data/test_elsif_else.txt";
-        String filename = "./src/test/data/test_elsif_without_else.txt";
+//        String filename = "./src/test/data/test_elsif_without_else.txt";
 
         try {
             service.process(filename);

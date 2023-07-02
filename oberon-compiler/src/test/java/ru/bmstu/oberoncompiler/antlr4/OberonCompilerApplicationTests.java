@@ -47,10 +47,10 @@ public class OberonCompilerApplicationTests {
                 Arguments.of("./src/test/data/test_if_else_inner.txt", "./src/test/data/test_if_else_inner_expected.txt"),
                 Arguments.of("./src/test/data/test_while.txt", "./src/test/data/test_while_expected.txt"),
                 Arguments.of("./src/test/data/test_fib.txt", "./src/test/data/test_fib_expected.txt"),
-                Arguments.of("./src/test/data/test_fib_array.txt", "./src/test/data/test_fib_array_expected.txt"),
                 Arguments.of("./src/test/data/test_elsif_else.txt", "./src/test/data/test_elsif_else_expected.txt"),
                 Arguments.of("./src/test/data/test_elsif_without_else.txt", "./src/test/data/test_elsif_without_else_expected.txt"),
-                Arguments.of("./src/test/data/test_if_without_else.txt", "./src/test/data/test_if_without_else_expected.txt")
+                Arguments.of("./src/test/data/test_if_without_else.txt", "./src/test/data/test_if_without_else_expected.txt"),
+                Arguments.of("./src/test/data/test_fib_array.txt", "./src/test/data/test_fib_array_expected.txt")
                 );
     }
 
